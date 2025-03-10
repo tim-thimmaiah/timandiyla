@@ -1,101 +1,52 @@
-import Image from "next/image";
+import Link from "next/link";
+import PageTransition from "@/components/PageTransition";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    <PageTransition>
+      <div className="min-h-screen p-8 flex flex-col items-center justify-center font-[family-name:var(--font-geist-sans)]">
+        <div className="flex-grow"></div>
+        <main className="max-w-4xl w-full">
+          <h1 className="text-center text-xl mb-12">
+            {`you're invited to celebrate`}
+          </h1>
+          <div className="py-4">
+            <svg
+              className="h-[10vh] mx-auto"
+              viewBox="0 0 297 66"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M26.907 1.73647V8.86825H18.0698V56H9.38759V8.86825H0.550386V1.73647H26.907ZM31.9457 1.73647H40.6279V56H31.9457V1.73647ZM46.8591 1.73647H54.9211L69.1847 16.0775L83.4482 1.73647H91.5102V56H82.8281V13.0543L69.1071 25.9225L55.5413 13.2093V56H46.8591V1.73647ZM156.532 1.73647V8.86825H150.485C159.168 15.1473 164.206 23.5969 164.206 32.3566C164.206 38.6357 162.656 43.907 159.71 47.938C161.183 48.5581 162.734 48.8682 164.284 48.8682V56C160.796 56 157.54 54.9147 154.439 53.1318C150.563 55.7674 145.602 57.1628 139.788 57.1628C126.377 57.1628 118.005 48.5581 118.005 34.7597C118.005 26.3101 123.276 18.8682 131.881 14.9148C130.718 10.1086 130.175 5.61244 130.175 1.73647H156.532ZM125.912 36.1551C125.912 44.8372 130.796 50.031 139.4 50.031C142.889 50.031 145.834 49.4109 148.315 48.1705C142.113 41.7364 137.23 32.3566 134.129 22.9768C128.78 25.9225 125.912 30.4961 125.912 36.1551ZM139.323 8.86825C140.873 20.8837 145.989 35.7675 153.509 43.5969C155.369 40.8062 156.299 37.2403 156.299 33.0543C156.299 22.5117 150.33 14.5272 139.323 8.86825ZM191.606 14.1396H200.288V56H191.606V14.1396ZM191.451 0.418649H200.443V9.41089H191.451V0.418649ZM203.112 1.73647H212.259L217.298 23.9845L222.337 1.73647H231.484L221.639 39.1783V56H212.957V39.1783L203.112 1.73647ZM234.147 1.73647H242.829V49.1008C258.953 50.4186 266.473 58.1705 278.721 58.1705V65.3023C262.131 65.3023 253.604 56 234.147 56V1.73647ZM288.094 1.73647H296.777V56H288.094V25.4574H274.761V56H266.079V24.2171C266.079 10.2636 274.451 1.73647 288.094 1.73647ZM275.536 18.3256H288.094V9.64344C281.428 9.64344 277.164 12.6667 275.536 18.3256Z"
+                fill="#DA4D73"
+              />
+            </svg>
+          </div>
+          <div className="py-4 text-center">
+            <Link href="/rsvp">
+              <button className="p-6 mx-auto min-w-[300px] text-white rounded-sm text-lg font-medium bg-[#A0304F]">{`rsvp`}</button>
+            </Link>
+          </div>
+        </main>
+        <footer className="mt-8 pt-8 text-center text-sm text-[#A0304F]">
+          <nav className="flex flex-wrap justify-center gap-4 mt-8">
+            <Link
+              href="/event"
+              className="px-6 py-3 transition-colors underline underline-offset-4 hover:text-[#A0304F]"
+            >
+              Event Details
+            </Link>
+            <Link
+              href="/faq"
+              className="px-6 py-3 transition-colors underline underline-offset-4 hover:text-[#A0304F]"
+            >
+              FAQ
+            </Link>
+          </nav>
+        </footer>
+        <div className="flex-grow"></div>
+      </div>
+    </PageTransition>
   );
 }

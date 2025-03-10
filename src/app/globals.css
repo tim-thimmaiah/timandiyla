@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FFF4F2;
+  --foreground: #DA4D73;
 }
 
 @theme inline {
@@ -10,12 +10,49 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-redz-50: #fbf4f7;
+  --color-redz-100: #f9eaf1;
+  --color-redz-200: #f4d6e3;
+  --color-redz-300: #edb4cb;
+  --color-redz-400: #e086a9;
+  --color-redz-500: #d36189;
+  --color-redz-600: #bf4369;
+  --color-redz-700: #a0304f;
+  --color-redz-800: #892b44;
+  --color-redz-900: #73283c;
+  --color-redz-950: #45121f;
+
+  --color-hawkes-50: #f0f1fd;
+--color-hawkes-100: #d9dcfa;
+--color-hawkes-200: #cdd0f8;
+--color-hawkes-300: #afb2f2;
+--color-hawkes-400: #938fea;
+--color-hawkes-500: #8174e0;
+--color-hawkes-600: #7058d3;
+--color-hawkes-700: #6049b9;
+--color-hawkes-800: #4f3d96;
+--color-hawkes-900: #423877;
+--color-hawkes-950: #282145;
+
+--color-chardon-50: #fff4f2;
+--color-chardon-100: #ffe5e0;
+--color-chardon-200: #ffcfc6;
+--color-chardon-300: #ffad9e;
+--color-chardon-400: #ff7e66;
+--color-chardon-500: #fd5536;
+--color-chardon-600: #eb3817;
+--color-chardon-700: #c62b0f;
+--color-chardon-800: #a32711;
+--color-chardon-900: #872715;
+--color-chardon-950: #4a1005;
+  
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #FFF4F2;
+    --foreground: #DA4D73;
   }
 }
 
