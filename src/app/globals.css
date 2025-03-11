@@ -1,16 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');
+
 @import "tailwindcss";
 
 :root {
   --background: #FFF4F2;
   --foreground: #DA4D73;
+  --font-handwriting: 'Caveat', cursive;
+  --font-serif: 'EB Garamond', serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-
+  --font-sans: var(--font-sans);
+  --font-handwriting: var(--font-handwriting);
+  --font-serif: var(--font-serif);
   --color-redz-50: #fbf4f7;
   --color-redz-100: #f9eaf1;
   --color-redz-200: #f4d6e3;
@@ -24,29 +29,28 @@
   --color-redz-950: #45121f;
 
   --color-hawkes-50: #f0f1fd;
---color-hawkes-100: #d9dcfa;
---color-hawkes-200: #cdd0f8;
---color-hawkes-300: #afb2f2;
---color-hawkes-400: #938fea;
---color-hawkes-500: #8174e0;
---color-hawkes-600: #7058d3;
---color-hawkes-700: #6049b9;
---color-hawkes-800: #4f3d96;
---color-hawkes-900: #423877;
---color-hawkes-950: #282145;
+  --color-hawkes-100: #d9dcfa;
+  --color-hawkes-200: #cdd0f8;
+  --color-hawkes-300: #afb2f2;
+  --color-hawkes-400: #938fea;
+  --color-hawkes-500: #8174e0;
+  --color-hawkes-600: #7058d3;
+  --color-hawkes-700: #6049b9;
+  --color-hawkes-800: #4f3d96;
+  --color-hawkes-900: #423877;
+  --color-hawkes-950: #282145;
 
---color-chardon-50: #fff4f2;
---color-chardon-100: #ffe5e0;
---color-chardon-200: #ffcfc6;
---color-chardon-300: #ffad9e;
---color-chardon-400: #ff7e66;
---color-chardon-500: #fd5536;
---color-chardon-600: #eb3817;
---color-chardon-700: #c62b0f;
---color-chardon-800: #a32711;
---color-chardon-900: #872715;
---color-chardon-950: #4a1005;
-  
+  --color-chardon-50: #fff4f2;
+  --color-chardon-100: #ffe5e0;
+  --color-chardon-200: #ffcfc6;
+  --color-chardon-300: #ffad9e;
+  --color-chardon-400: #ff7e66;
+  --color-chardon-500: #fd5536;
+  --color-chardon-600: #eb3817;
+  --color-chardon-700: #c62b0f;
+  --color-chardon-800: #a32711;
+  --color-chardon-900: #872715;
+  --color-chardon-950: #4a1005;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -59,5 +63,34 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+
+/* Polaroid animation */
+@keyframes develop {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.animate-develop {
+  animation: develop 3s forwards;
+}
+
+/* Polaroid shake animation */
+@keyframes shake {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Add handwriting font class */
+.font-handwriting {
+  font-family: var(--font-handwriting);
 }

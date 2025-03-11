@@ -4,7 +4,7 @@ import PageTransition from "@/components/PageTransition";
 export default function Home() {
   return (
     <PageTransition>
-      <div className="min-h-screen p-8 flex flex-col items-center justify-center font-[family-name:var(--font-geist-sans)]">
+      <div className="min-h-screen p-8 flex flex-col items-center justify-center font-serif italic">
         <div className="flex-grow"></div>
         <main className="max-w-4xl w-full">
           <h1 className="text-center text-xl mb-12">

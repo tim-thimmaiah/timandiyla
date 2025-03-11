@@ -33,9 +33,9 @@ export default function RSVPPage() {
     e.preventDefault();
     await submitForm();
 
-    // If submission was successful, redirect to the registered page
+    // If submission was successful, redirect to the photo page
     if (isSubmitted && !error) {
-      router.push("/registered");
+      router.push("/photo-memory");
     }
   };
 
@@ -46,7 +46,7 @@ export default function RSVPPage() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen p-8 flex flex-col items-center justify-center font-[family-name:var(--font-geist-sans)]">
+      <div className="min-h-screen p-8 flex flex-col items-center justify-center font-serif italic">
         <main className="max-w-4xl w-full">
           <h1 className="text-4xl font-bold text-center mb-8">
             <svg
