@@ -26,7 +26,7 @@ export default function PhotoMemoryPage() {
     resetPhotoMemory,
   } = usePhotoMemoryStore();
 
-  const { name } = useRSVPStore();
+  const {} = useRSVPStore();
 
   // Fix hydration issues by only rendering on the client
   useEffect(() => {
@@ -93,53 +93,53 @@ export default function PhotoMemoryPage() {
                 {/* {step === "preview" && "Your Polaroid Memory"} */}
               </h1>
               {step === "intro" && (
-                <div className="space-y-6 font-serif">
-                  <p className="text-2xl text-center">
-                    Would you like to add a poloroid for our website photo
-                    album? (You can also do this later.)
-                  </p>
+                <div className="space-y-6 font-serif max-w-lg mx-auto relative">
+                  <div className="mt-0">
+                    <p className="text-2xl text-center pb-4">
+                      Would you like to add a polaroid for our website photo
+                      album? (You can also do this later.)
+                    </p>
 
-                  <div className="flex flex-col items-center space-y-4">
-                    <button
-                      onClick={() => {
-                        setIsCapturing(true);
-                        setStep("camera");
-                      }}
-                      className="px-6 py-4 font-medium text-xl bg-redz-700 text-white rounded-md hover:bg-redz-800 transition-colors w-full max-w-xs cursor-pointer"
-                    >
-                      Take a Photo
-                    </button>
+                    <div className="flex flex-col items-center space-y-4 mt-8">
+                      <button
+                        onClick={() => {
+                          setIsCapturing(true);
+                          setStep("camera");
+                        }}
+                        className="px-6 py-4 font-medium text-xl bg-redz-700 text-white rounded-md hover:bg-redz-800 transition-colors w-full max-w-xs cursor-pointer"
+                      >
+                        take a photo
+                      </button>
 
-                    <button
-                      onClick={handleSkip}
-                      className="px-6 py-4 bg-transparent text-redz-700 rounded-md hover:bg-redz-50 transition-colors w-full max-w-xs"
-                    >
-                      Skip
-                    </button>
+                      <button
+                        onClick={handleSkip}
+                        className="px-6 py-4 bg-transparent text-redz-700 rounded-md hover:bg-redz-50 transition-colors w-full max-w-xs"
+                      >
+                        skip
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
               {step === "camera" && (
-                <div className="space-y-6">
-                  <p className="text-center text-xl mb-4 font-serif italic">
-                    Position you or your group in the frame and smile!
-                  </p>
+                <div className="space-y-6 relative">
+                  <div className="mt-0">
+                    <p className="text-center text-xl mb-4 font-serif italic">
+                      Position you or your group in the frame and smile!
+                    </p>
 
-                  <CameraCapture
-                    onCapture={handleCapture}
-                    onCancel={handleCameraCancel}
-                  />
+                    <CameraCapture
+                      onCapture={handleCapture}
+                      onCancel={handleCameraCancel}
+                    />
+                  </div>
                 </div>
               )}
               {step === "note" && (
                 <div className="space-y-6 font-serif italic max-w-4xl">
-                  <div className="flex flex-col gap-8 items-center max-w-4xl">
-                    <div className="w-full">
-                      <PolaroidFrame
-                        photoData={photoData}
-                        note={note}
-                        isPreview={true}
-                      />
+                  <div className="flex flex-col gap-8 items-center max-w-4xl relative">
+                    <div className="relative h-[500px] w-full">
+                      <PolaroidFrame photoData={photoData} note={note} />
                     </div>
                     <div className="w-full max-w-lg">
                       <p className="mb-4 text-xl font-serif italic">
@@ -181,9 +181,13 @@ export default function PhotoMemoryPage() {
               )}
               {step === "preview" && (
                 <div className="space-y-8 font-serif italic">
-                  <div className="flex justify-center">
-                    <div className="animate-shake">
-                      <PolaroidFrame photoData={photoData} note={note} />
+                  <div className="flex justify-center relative -top-16">
+                    <div className="h-screen w-screen">
+                      <PolaroidFrame
+                        photoData={photoData}
+                        note={note}
+                        className=""
+                      />
                     </div>
                   </div>
 
@@ -207,9 +211,9 @@ export default function PhotoMemoryPage() {
             </div>
           </div>
 
-          <div className="mt-8 text-center">
-            <Link href="/" className="text-black hover:underline">
-              Back to Home
+          <div className="mt-8 text-center font-serif italic">
+            <Link href="/" className="text-redz-400 hover:underline">
+              go back home
             </Link>
           </div>
         </main>
