@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import PolaroidFrame from "@/components/PolaroidFrame";
+import PolaroidFrame3D from "@/components/PolaroidFrame3D";
 
 // Create a custom type for 3D effect parameters
 interface ThreeDEffectParams {
@@ -594,7 +594,7 @@ const DebugPolaroid: React.FC = () => {
           {/* Component Preview */}
           <div className="bg-white p-6 rounded-lg shadow-md flex items-center justify-center">
             <div className="w-full max-w-md">
-              <PolaroidFrame
+              <PolaroidFrame3D
                 photoData={photoData}
                 note={note}
                 isPreview={isPreview}

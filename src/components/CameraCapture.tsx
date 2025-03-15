@@ -130,10 +130,8 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({
               muted
               className="w-full h-full object-cover"
             />
-
-            {/* Countdown overlay */}
             {countdown && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/10 bg-opacity-50">
                 <span className="text-white text-7xl font-bold">
                   {countdown}
                 </span>

@@ -75,9 +75,9 @@ export default function RegisteredPage() {
           <div className="mt-8">
             <Link
               href="/"
-              className="px-6 py-3 bg-black text-white rounded-md hover:bg-redz-800 transition-colors"
+              className="px-6 py-3 bg-redz-700 text-white rounded-md hover:bg-redz-800 transition-colors"
             >
-              Return to Home
+              view event details
             </Link>
           </div>
         </main>

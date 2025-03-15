@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import PageTransition from "@/components/PageTransition";
 import CameraCapture from "@/components/CameraCapture";
-import PolaroidFrame from "@/components/PolaroidFrame";
+import PolaroidFrame, { BadgeType } from "@/components/PolaroidFrame";
 import { usePhotoMemoryStore } from "@/lib/photoStore";
 import { useRSVPStore } from "@/lib/rsvpStore";
 
@@ -15,6 +15,8 @@ export default function PhotoMemoryPage() {
   const [step, setStep] = useState<"intro" | "camera" | "note" | "preview">(
     "intro"
   );
+  const [shouldShake, setShouldShake] = useState(false);
+  const [selectedBadge, setSelectedBadge] = useState<BadgeType>(null);
 
   // Get state and actions from our stores
   const {
@@ -37,6 +39,10 @@ export default function PhotoMemoryPage() {
   const handleCapture = (capturedPhotoData: string) => {
     setPhotoData(capturedPhotoData);
     setStep("note");
+    // Trigger shake animation when reaching the note step
+    setTimeout(() => {
+      setShouldShake(true);
+    }, 300);
   };
 
   // Handle camera cancel
@@ -48,6 +54,11 @@ export default function PhotoMemoryPage() {
   // Handle note change
   const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNote(e.target.value);
+  };
+
+  // Handle badge selection
+  const handleBadgeSelect = (badge: BadgeType) => {
+    setSelectedBadge(badge);
   };
 
   // Handle form submission
@@ -62,6 +73,13 @@ export default function PhotoMemoryPage() {
     resetPhotoMemory();
     router.push("/registered");
   };
+
+  // Reset shake state when leaving note step
+  useEffect(() => {
+    if (step !== "note") {
+      setShouldShake(false);
+    }
+  }, [step]);
 
   if (!isClient) {
     return null; // Prevent hydration issues
@@ -138,10 +156,61 @@ export default function PhotoMemoryPage() {
               {step === "note" && (
                 <div className="space-y-6 font-serif italic max-w-4xl">
                   <div className="flex flex-col gap-8 items-center max-w-4xl relative">
-                    <div className="relative h-[500px] w-full">
-                      <PolaroidFrame photoData={photoData} note={note} />
+                    <div className="relative w-full -top-10">
+                      <PolaroidFrame
+                        photoData={photoData}
+                        note={note}
+                        badge={selectedBadge}
+                        triggerShake={shouldShake}
+                        onShake={() => setShouldShake(false)}
+                      />
                     </div>
-                    <div className="w-full max-w-lg">
+                    <div className="w-full" style={{ maxWidth: "300px" }}>
+                      {/* <div className="mb-6">
+                        <p className="mb-3 text-xl font-serif italic">
+                          Add a badge (optional):
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={() => handleBadgeSelect("rsvp")}
+                            className={`px-3 py-2 text-sm rounded-md transition-colors ${
+                              selectedBadge === "rsvp"
+                                ? "bg-redz-700 text-white"
+                                : "bg-redz-100 text-redz-700 hover:bg-redz-200"
+                            }`}
+                          >
+                            RSVP&apos;d
+                          </button>
+                          <button
+                            onClick={() => handleBadgeSelect("coming")}
+                            className={`px-3 py-2 text-sm rounded-md transition-colors ${
+                              selectedBadge === "coming"
+                                ? "bg-green-600 text-white"
+                                : "bg-green-100 text-green-700 hover:bg-green-200"
+                            }`}
+                          >
+                            We&apos;re coming!
+                          </button>
+                          <button
+                            onClick={() => handleBadgeSelect("cantWait")}
+                            className={`px-3 py-2 text-sm rounded-md transition-colors ${
+                              selectedBadge === "cantWait"
+                                ? "bg-blue-600 text-white"
+                                : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                            }`}
+                          >
+                            Can&apos;t wait
+                          </button>
+                          {selectedBadge && (
+                            <button
+                              onClick={() => handleBadgeSelect(null)}
+                              className="px-3 py-2 text-sm rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                            >
+                              No badge
+                            </button>
+                          )}
+                        </div>
+                      </div> */}
                       <p className="mb-4 text-xl font-serif italic">
                         Add a note to your photo memory:
                       </p>
@@ -151,11 +220,11 @@ export default function PhotoMemoryPage() {
                         className="w-full px-4 py-3 border-2 border-redz-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-4 focus:ring-redz-300 focus:ring-offset-chardon-50 font-handwriting text-lg"
                         placeholder="Write your message here..."
                         rows={3}
-                        maxLength={100}
+                        maxLength={150}
                       ></textarea>
 
                       <p className="text-sm text-gray-500 mt-2 font-serif italic">
-                        {note.length}/100 characters
+                        {note.length}/150 characters
                       </p>
 
                       <div className="flex justify-between mt-6">
@@ -181,11 +250,12 @@ export default function PhotoMemoryPage() {
               )}
               {step === "preview" && (
                 <div className="space-y-8 font-serif italic">
-                  <div className="flex justify-center relative -top-16">
-                    <div className="h-screen w-screen">
+                  <div className="flex justify-center relative -top-8">
+                    <div className="">
                       <PolaroidFrame
                         photoData={photoData}
                         note={note}
+                        badge={selectedBadge}
                         className=""
                       />
                     </div>
