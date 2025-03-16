@@ -1,253 +1,157 @@
-import React, { useState, useEffect, useRef, CSSProperties } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  useMotionValueEvent,
+} from "framer-motion";
 
-// Badge types
-export type BadgeType = "rsvp" | "coming" | "cantWait" | null;
-
-// Badge properties interface
-interface BadgeProperties {
-  text: string;
-  color: string;
-  rotation: string;
-  shape: "stamp" | "flower" | "scalloped";
-  extraStyles: CSSProperties;
+// Define the type for card driven props
+export interface CardDrivenProps {
+  cardWrapperX: number;
+  buttonScaleLeft: number;
+  buttonScaleRight: number;
+  mainBgColor: string;
 }
 
 interface PolaroidFrameProps {
+  id: string;
   photoData: string | null;
   note: string;
-  badge?: BadgeType;
   isPreview?: boolean;
-  className?: string;
   triggerShake?: boolean;
   onShake?: () => void;
+  isLast: boolean;
+  setIsDragging: (isDragging: boolean) => void;
+  isDragging: boolean;
+  setCardDrivenProps: (
+    props: CardDrivenProps | ((prev: CardDrivenProps) => CardDrivenProps)
+  ) => void;
+  setIsDragOffBoundary: (boundary: "left" | "right" | null) => void;
+  setDirection: (direction: "left" | "right") => void;
+  exitDirection?: "left" | "right" | null;
 }
 
 const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
+  id,
   photoData,
   note,
-  badge = null,
   isPreview = false,
-  className = "",
   triggerShake = false,
   onShake,
+  isLast,
+  setIsDragging,
+  isDragging,
+  exitDirection,
+  setCardDrivenProps,
+  setIsDragOffBoundary,
+  setDirection,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  // We're using setMousePosition but not the value directly
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  // Disable hover effects when dragging
+  useEffect(() => {
+    if (isDragging && isHovered) {
+      setIsHovered(false);
+    }
+  }, [isDragging, isHovered]);
 
   // Calculate font size based on note length
   const calculateFontSize = () => {
     if (!note) return isPreview ? "14px" : "18px";
-
-    // Base font size
     const baseFontSize = isPreview ? 14 : 18;
-
-    // Adjust font size based on text length
-    if (note.length <= 20) {
-      return `${baseFontSize}px`;
-    } else if (note.length <= 40) {
-      return `${baseFontSize - 2}px`;
-    } else if (note.length <= 60) {
-      return `${baseFontSize - 4}px`;
-    } else if (note.length <= 80) {
-      return `${baseFontSize - 5}px`;
-    } else {
-      return `${baseFontSize - 6}px`;
-    }
+    if (note.length <= 20) return `${baseFontSize}px`;
+    if (note.length <= 40) return `${baseFontSize - 2}px`;
+    if (note.length <= 60) return `${baseFontSize - 4}px`;
+    if (note.length <= 80) return `${baseFontSize - 5}px`;
+    return `${baseFontSize - 6}px`;
   };
 
-  // Get badge properties
-  const getBadgeProperties = (): BadgeProperties | null => {
-    const r = isPreview ? "10px" : "15px"; // Radius for stamp and scalloped shapes
-
-    switch (badge) {
-      case "rsvp":
-        return {
-          text: "RSVP'd",
-          color: "#DA4D73", // Pink
-          rotation: "-5deg",
-          shape: "stamp",
-          extraStyles: {
-            height: isPreview ? "40px" : "60px",
-            aspectRatio: "1.5",
-            padding: r,
-            background: "#DA4D73",
-            mask: `radial-gradient(50% 50%,#0000 66%,#000 67%) round ${r} ${r}/calc(2*${r}) calc(2*${r}), conic-gradient(#000 0 0) content-box`,
-            WebkitMask: `radial-gradient(50% 50%,#0000 66%,#000 67%) round ${r} ${r}/calc(2*${r}) calc(2*${r}), conic-gradient(#000 0 0) content-box`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: isPreview ? "10px" : "14px",
-            color: "white",
-            textAlign: "center",
-            boxShadow: "0 3px 6px rgba(0,0,0,0.3)",
-          } as CSSProperties,
-        };
-      case "coming":
-        return {
-          text: "We're coming!",
-          color: "#4CAF50", // Green
-          rotation: "3deg",
-          shape: "flower",
-          extraStyles: {
-            width: isPreview ? "50px" : "70px",
-            aspectRatio: "1",
-            background: "#4CAF50",
-            "--g":
-              "/20.56% 20.56% radial-gradient(#000 calc(71% - 1px),#0000 71%) no-repeat",
-            mask: "100% 50% var(--g),93.301% 75% var(--g),75% 93.301% var(--g),50% 100% var(--g),25% 93.301% var(--g),6.699% 75% var(--g),0% 50% var(--g),6.699% 25% var(--g),25% 6.699% var(--g),50% 0% var(--g),75% 6.699% var(--g),93.301% 25% var(--g),radial-gradient(100% 100%,#000 38.366%,#0000 calc(38.366% + 1px))",
-            WebkitMask:
-              "100% 50% var(--g),93.301% 75% var(--g),75% 93.301% var(--g),50% 100% var(--g),25% 93.301% var(--g),6.699% 75% var(--g),0% 50% var(--g),6.699% 25% var(--g),25% 6.699% var(--g),50% 0% var(--g),75% 6.699% var(--g),93.301% 25% var(--g),radial-gradient(100% 100%,#000 38.366%,#0000 calc(38.366% + 1px))",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: isPreview ? "9px" : "14px",
-            color: "white",
-            textAlign: "center",
-            boxShadow: "0 3px 6px rgba(0,0,0,0.3)",
-          } as CSSProperties,
-        };
-      case "cantWait":
-        return {
-          text: "Can't wait!",
-          color: "#2196F3", // Blue
-          rotation: "-3deg",
-          shape: "scalloped",
-          extraStyles: {
-            height: isPreview ? "50px" : "70px",
-            aspectRatio: "1",
-            padding: `calc(1.5*${r})`,
-            background: "#2196F3",
-            mask: `linear-gradient(#000 0 0) no-repeat 50%/calc(100% - 2*${r}) calc(100% - 2*${r}), radial-gradient(farthest-side,#000 97%,#0000) 0 0/calc(2*${r}) calc(2*${r}) round`,
-            WebkitMask: `linear-gradient(#000 0 0) no-repeat 50%/calc(100% - 2*${r}) calc(100% - 2*${r}), radial-gradient(farthest-side,#000 97%,#0000) 0 0/calc(2*${r}) calc(2*${r}) round`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: isPreview ? "9px" : "14px",
-            color: "white",
-            textAlign: "center",
-            boxShadow: "0 3px 6px rgba(0,0,0,0.3)",
-          } as CSSProperties,
-        };
-      default:
-        return null;
-    }
-  };
-
-  // Update container dimensions on resize
-  useEffect(() => {
-    const updateDimensions = () => {
-      // This function ensures the container is properly sized
-      // but doesn't need to store dimensions in state
-    };
-
-    updateDimensions();
-    window.addEventListener("resize", updateDimensions);
-    return () => window.removeEventListener("resize", updateDimensions);
-  }, []);
-
-  // Handle shake when triggerShake prop changes
-  useEffect(() => {
-    if (triggerShake && !isShaking) {
-      setIsShaking(true);
-      if (onShake) onShake();
-
-      setTimeout(() => {
-        setIsShaking(false);
-      }, 500); // Animation duration
-    }
-  }, [triggerShake, isShaking, onShake]);
-
-  // Handle mouse movement for 3D effect
+  // Hover effects
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     if (containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
-      // Calculate normalized mouse position (-1 to 1)
       const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       const y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
       setMousePosition({ x, y });
     }
   };
 
-  // Calculate rotation based on mouse position
-  const rotateX = isHovered ? -mousePosition.y * 15 : 0; // Max 15 degrees
-  const rotateY = isHovered ? mousePosition.x * 15 : 0; // Max 15 degrees
+  useEffect(() => {
+    if (triggerShake && !isShaking) {
+      setIsShaking(true);
+      if (onShake) onShake();
+      setTimeout(() => setIsShaking(false), 500);
+    }
+  }, [triggerShake, isShaking, onShake]);
 
-  // Floating animation properties
-  const floatY = isHovered
-    ? 0
-    : "calc(sin(var(--float-time, 0) * 0.5rad) * 5px)";
-  const floatRotateY = isHovered
-    ? 0
-    : "calc(sin(var(--float-time, 0) * 0.3rad) * 3deg)";
-
-  // Scale slightly on hover
-  const scale = isHovered ? 1.02 : 1;
-
-  // Base dimensions (aspect ratio from the 3D component)
-  const baseWidth = isPreview ? "200px" : "300px";
-  const baseHeight = isPreview ? "280px" : "400px";
-
-  // Get dynamic font size
   const fontSize = calculateFontSize();
 
-  // Get badge properties
-  const badgeProps = getBadgeProperties();
+  //animation
+  const x = useMotionValue(0);
+  // const isMobile = useMediaQuery("(max-width: 768px)");
+
+  const offsetBoundary = 150;
+
+  const inputX = [offsetBoundary * -1, 0, offsetBoundary];
+  const outputX = [-200, 0, 200];
+  const outputY = [50, 0, 50];
+  const outputRotate = [-40, 0, 40];
+  const outputActionScaleBadAnswer = [3, 1, 0.3];
+  const outputActionScaleRightAnswer = [0.3, 1, 3];
+  const drivenX = useTransform(x, inputX, outputX);
+  const drivenY = useTransform(x, inputX, outputY);
+  const drivenRotation = useTransform(x, inputX, outputRotate);
+  const drivenActionLeftScale = useTransform(
+    x,
+    inputX,
+    outputActionScaleBadAnswer
+  );
+  const drivenActionRightScale = useTransform(
+    x,
+    inputX,
+    outputActionScaleRightAnswer
+  );
+
+  useMotionValueEvent(x, "change", (latest) => {
+    setCardDrivenProps((state) => ({
+      ...state,
+      cardWrapperX: latest,
+      buttonScaleLeft: drivenActionLeftScale.get(),
+      buttonScaleRight: drivenActionRightScale.get(),
+    }));
+  });
 
   return (
-    <motion.div
-      ref={containerRef}
-      className={`relative ${className}`}
-      style={{
-        perspective: "1000px",
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: "-20px", // Add negative margin to overlap with SVG text
-        zIndex: 10, // Ensure polaroid is above the SVG
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onMouseMove={handleMouseMove}
-    >
+    <>
+      {/* Driven wrapper - Visual card */}
       <motion.div
-        className={`polaroid-container ${isShaking ? "animate-shake" : ""}`}
+        className={`absolute w-full h-full bg-white rounded-lg shadow-lg`}
         style={{
-          width: baseWidth,
-          height: baseHeight,
-          maxWidth: "100%",
-          maxHeight: "100%",
           transformStyle: "preserve-3d",
-          transform: `
-            rotateX(${rotateX}deg) 
-            rotateY(${rotateY}deg) 
-            translateY(${floatY}) 
-            rotateY(${floatRotateY})
-            scale(${scale})
-          `,
-          transition: isHovered
-            ? "transform 0.1s ease-out"
-            : "transform 0.5s ease-out",
-          position: "relative",
-        }}
-        animate={{
-          "--float-time": [0, Math.PI * 2],
+          perspective: "1000px",
+          y: drivenY,
+          rotate: drivenRotation,
+          x: drivenX,
         }}
         transition={{
-          "--float-time": {
-            repeat: Infinity,
-            duration: 4,
-            ease: "linear",
-          },
+          rotateX: { duration: 0.1 },
+          rotateY: { duration: 0.1 },
+          scale: { duration: 0.1 },
         }}
+        onMouseEnter={() =>
+          isLast && !isDragging && !exitDirection && setIsHovered(true)
+        }
+        onMouseLeave={() => setIsHovered(false)}
+        onMouseMove={handleMouseMove}
+        ref={containerRef}
       >
-        {/* Polaroid frame */}
         <div
-          className="polaroid-frame"
+          className={`polaroid-container ${isShaking ? "animate-shake" : ""}`}
           style={{
             width: "100%",
             height: "100%",
@@ -262,7 +166,6 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
             transition: "box-shadow 0.3s ease",
           }}
         >
-          {/* Photo area with subtle border */}
           <div
             className="photo-border"
             style={{
@@ -278,7 +181,6 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
               borderRadius: "2px",
             }}
           />
-
           <div
             className="photo-container"
             style={{
@@ -307,8 +209,6 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
               />
             )}
           </div>
-
-          {/* Subtle texture overlay for the photo */}
           <div
             className="photo-texture"
             style={{
@@ -325,25 +225,6 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
               opacity: 0.3,
             }}
           />
-
-          {/* Badge */}
-          {badgeProps && (
-            <div
-              className="badge font-sans"
-              style={{
-                position: "absolute",
-                top: "2%",
-                right: "5%",
-                transform: `translateZ(3px) rotate(${badgeProps.rotation})`,
-                transformStyle: "preserve-3d",
-                zIndex: 20,
-              }}
-            >
-              <div style={badgeProps.extraStyles}>{badgeProps.text}</div>
-            </div>
-          )}
-
-          {/* Note area with subtle shadow */}
           <div
             className="note-area-shadow"
             style={{
@@ -353,13 +234,11 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
               width: "82%",
               height: "16%",
               backgroundColor: "#ffff",
-              // boxShadow: "inset 0 0 4px rgba(0, 0, 0, 0.05)",
               transformStyle: "preserve-3d",
               transform: "translateZ(0.25px)",
               borderRadius: "2px",
             }}
           />
-
           <div
             className="note-area"
             style={{
@@ -380,7 +259,7 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
               style={{
                 margin: 0,
                 padding: 0,
-                fontSize: fontSize,
+                fontSize,
                 color: "#2a2a2a",
                 textAlign: "center",
                 width: "100%",
@@ -395,8 +274,6 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
               {note}
             </p>
           </div>
-
-          {/* Subtle paper texture overlay */}
           <div
             className="paper-texture"
             style={{
@@ -415,7 +292,42 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
           />
         </div>
       </motion.div>
-    </motion.div>
+      <motion.div
+        id={id}
+        className={`absolute w-full aspect-[100/150] ${
+          !isDragging ? "hover:cursor-grab" : ""
+        }`}
+        drag="x"
+        dragSnapToOrigin
+        dragElastic={false ? 0.2 : 0.06}
+        dragConstraints={{ left: 0, right: 0 }}
+        dragTransition={{ bounceStiffness: 1000, bounceDamping: 50 }}
+        onDragStart={() => setIsDragging(true)}
+        onDrag={(_, info) => {
+          const offset = info.offset.x;
+
+          if (offset < 0 && offset < offsetBoundary * -1) {
+            setIsDragOffBoundary("left");
+          } else if (offset > 0 && offset > offsetBoundary) {
+            setIsDragOffBoundary("right");
+          } else {
+            setIsDragOffBoundary(null);
+          }
+        }}
+        onDragEnd={(_, info) => {
+          setIsDragging(false);
+          setIsDragOffBoundary(null);
+          const isOffBoundary =
+            info.offset.x > offsetBoundary || info.offset.x < -offsetBoundary;
+          const direction = info.offset.x > 0 ? "right" : "left";
+
+          if (isOffBoundary) {
+            setDirection(direction);
+          }
+        }}
+        style={{ x }}
+      ></motion.div>
+    </>
   );
 };
 

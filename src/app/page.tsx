@@ -1,18 +1,20 @@
 import Link from "next/link";
 import PageTransition from "@/components/PageTransition";
+import PolaroidCarousel from "@/components/PolaroidCarousel";
+import { polaroidData } from "@/constants/polaroidData";
 
 export default function Home() {
   return (
     <PageTransition>
-      <div className="min-h-screen p-8 flex flex-col items-center justify-center font-serif italic">
+      <div className="min-h-screen p-4 md:p-8 flex flex-col items-center justify-center font-serif italic">
         <div className="flex-grow"></div>
         <main className="max-w-4xl w-full">
-          <h1 className="text-center text-xl mb-12">
+          <h1 className="text-center text-xl mb-2">
             {`you're invited to celebrate`}
           </h1>
           <div className="py-4">
             <svg
-              className="h-[10vh] mx-auto"
+              className="h-[8vh] md:h-[10vh] mx-auto"
               viewBox="0 0 297 66"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -23,23 +25,32 @@ export default function Home() {
               />
             </svg>
           </div>
+          <div className="mb-4">
+            <div className="px-4 md:px-0 -top-10 relative">
+              <PolaroidCarousel polaroids={polaroidData} />
+            </div>
+          </div>
+          <div className="text-center text-sm">
+            <h2 className="text-2xl">{`July 4  & July 5  2025`}</h2>
+            <p className="text-xl ">{`Oakland, California`}</p>
+          </div>
           <div className="py-4 text-center">
             <Link href="/rsvp">
-              <button className="p-6 mx-auto min-w-[300px] text-white rounded-sm text-lg font-medium bg-[#A0304F]">{`rsvp`}</button>
+              <button className="p-4 md:p-6 mx-auto min-w-[250px] md:min-w-[300px] text-white rounded-sm text-lg font-medium bg-[#A0304F]">{`rsvp`}</button>
             </Link>
           </div>
         </main>
-        <footer className="mt-8 pt-8 text-center text-sm text-[#A0304F]">
-          <nav className="flex flex-wrap justify-center gap-4 mt-8">
+        <footer className="mt-6 md:mt-4 pt-0 md:pt-0 text-center text-sm text-[#A0304F]">
+          <nav className="flex flex-wrap justify-center gap-4 mt-6 md:mt-8">
             <Link
               href="/event"
-              className="px-6 py-3 transition-colors underline underline-offset-4 hover:text-[#A0304F]"
+              className="px-4 md:px-6 py-2 md:py-3 transition-colors underline underline-offset-4 hover:text-[#A0304F]"
             >
               Event Details
             </Link>
             <Link
               href="/faq"
-              className="px-6 py-3 transition-colors underline underline-offset-4 hover:text-[#A0304F]"
+              className="px-4 md:px-6 py-2 md:py-3 transition-colors underline underline-offset-4 hover:text-[#A0304F]"
             >
               FAQ
             </Link>
