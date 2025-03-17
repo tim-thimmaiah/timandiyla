@@ -36,14 +36,67 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
   polaroids,
   className = "",
 }) => {
-  // Store the original polaroids for infinite cycling
+  // Log incoming polaroids to verify isRsvp property
+  const rsvpCount = polaroids.filter((p) => p.isRsvp === true).length;
+  console.log("PolaroidCarousel: Incoming polaroids with isRsvp:", rsvpCount);
+
+  // Store the original polaroids for infinite cycling with explicit isRsvp handling
   const originalPolaroids = useRef<PolaroidItem[]>(
-    polaroids.map((item, index) => ({ ...item, id: index }))
+    polaroids.map((item, index) => {
+      // Create a new object with explicit properties
+      return {
+        photoData: item.photoData,
+        note: item.note,
+        badge: item.badge,
+        id: index,
+        isRsvp: item.isRsvp === true,
+      };
+    })
   ).current;
 
-  const [cards, setCards] = useState<PolaroidItem[]>(
-    originalPolaroids.map((item) => ({ ...item }))
+  // Log original polaroids to verify isRsvp property is preserved
+  const originalRsvpCount = originalPolaroids.filter(
+    (p) => p.isRsvp === true
+  ).length;
+  console.log(
+    "PolaroidCarousel: Original polaroids with isRsvp:",
+    originalRsvpCount
   );
+
+  // Initialize cards with explicit isRsvp handling
+  const [cards, setCards] = useState<PolaroidItem[]>(
+    originalPolaroids.map((item) => ({
+      photoData: item.photoData,
+      note: item.note,
+      badge: item.badge,
+      id: item.id,
+      isRsvp: item.isRsvp === true,
+    }))
+  );
+
+  // Log initial cards to verify isRsvp property is preserved
+  const initialCardsRsvpCount = cards.filter((c) => c.isRsvp === true).length;
+  console.log(
+    "PolaroidCarousel: Initial cards with isRsvp:",
+    initialCardsRsvpCount
+  );
+
+  // Add a useEffect to log the cards whenever they change
+  useEffect(() => {
+    const cardsWithRsvpCount = cards.filter((c) => c.isRsvp === true).length;
+    console.log(
+      "PolaroidCarousel: Cards updated with isRsvp:",
+      cardsWithRsvpCount
+    );
+
+    if (cardsWithRsvpCount > 0) {
+      console.log(
+        "PolaroidCarousel: First card with isRsvp:",
+        cards.find((c) => c.isRsvp === true)
+      );
+    }
+  }, [cards]);
+
   const [direction, setDirection] = useState<"left" | "right" | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -51,10 +104,12 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
   const [isDragOffBoundary, setIsDragOffBoundary] = useState<
     "left" | "right" | null
   >(null);
-  const [cardDrivenProps, setCardDrivenProps] = useState(initialDrivenProps);
+  const [, setCardDrivenProps] = useState(initialDrivenProps);
 
   // Counter for generating unique IDs for recycled cards
   const idCounter = useRef(originalPolaroids.length);
+  // Track the current position in the original array
+  const currentPositionRef = useRef(0);
 
   useEffect(() => {
     if (direction === "left" || direction === "right") {
@@ -64,11 +119,27 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
 
         // If cards are getting low, add more from the original set
         if (newCards.length < 3) {
-          // Get the next card from the original set and assign a new unique ID
-          const nextCardIndex = idCounter.current % originalPolaroids.length;
+          // Update the current position based on direction
+          if (direction === "left") {
+            // Move forward in the order (next card)
+            currentPositionRef.current =
+              (currentPositionRef.current + 1) % originalPolaroids.length;
+          } else {
+            // Move backward in the order (previous card)
+            currentPositionRef.current =
+              (currentPositionRef.current - 1 + originalPolaroids.length) %
+              originalPolaroids.length;
+          }
+
+          const sourceCard = originalPolaroids[currentPositionRef.current];
+
+          // Create a new card with explicit properties
           const nextCard = {
-            ...originalPolaroids[nextCardIndex],
+            photoData: sourceCard.photoData,
+            note: sourceCard.note,
+            badge: sourceCard.badge,
             id: idCounter.current,
+            isRsvp: sourceCard.isRsvp === true,
           };
 
           // Increment the ID counter
@@ -143,6 +214,17 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
             const isUpcoming = i === cards.length - 2;
             const isUpcomingSecond = i === cards.length - 3;
 
+            // Explicitly check for true
+            const isRsvp = card.isRsvp === true;
+
+            // Log each card's isRsvp status
+            console.log(
+              `Card ${i} isRsvp:`,
+              isRsvp,
+              "Original value:",
+              card.isRsvp
+            );
+
             return (
               <motion.div
                 key={`card-${card.id}`}
@@ -166,6 +248,8 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
                   )}deg) translate(${getRandomOffset(20)}px, ${getRandomOffset(
                     20 // Increased from 10
                   )}px)`,
+                  // Apply additional transform based on drag boundary
+                  ...(isDragOffBoundary && { zIndex: 50 }),
                 }}
               >
                 <PolaroidFrame
@@ -178,12 +262,59 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
                   isDragging={isDragging}
                   setIsDragOffBoundary={setIsDragOffBoundary}
                   setDirection={setDirection}
-                  isRsvp={card.isRsvp}
+                  isRsvp={isRsvp}
                 />
               </motion.div>
             );
           })}
         </AnimatePresence>
+      </div>
+
+      {/* Navigation buttons */}
+      <div className="flex justify-between w-full mt-6 px-4">
+        <motion.button
+          className="bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setDirection("right")}
+          aria-label="Previous photo"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </motion.button>
+
+        <motion.button
+          className="bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setDirection("left")}
+          aria-label="Next photo"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </motion.button>
       </div>
     </motion.div>
   );

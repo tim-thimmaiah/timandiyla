@@ -129,6 +129,31 @@ export const usePhotoMemoryStore = create<
           console.log("RSVP lookup result:", rsvpData);
           if (rsvpData && rsvpData.length > 0) {
             rsvpId = rsvpData[0].id;
+            console.log("Found RSVP ID:", rsvpId);
+          } else {
+            console.log("No RSVP record found for email:", email);
+
+            // If no RSVP record exists, create one
+            if (name && email) {
+              const { data: newRsvp, error: createError } = await supabase
+                .from("rsvps")
+                .insert({
+                  name,
+                  email,
+                  attending: true,
+                  guests: 0,
+                  dietary_requirements: "",
+                  message: "Created from photo memory submission",
+                })
+                .select();
+
+              if (createError) {
+                console.error("Error creating RSVP record:", createError);
+              } else if (newRsvp && newRsvp.length > 0) {
+                rsvpId = newRsvp[0].id;
+                console.log("Created new RSVP ID:", rsvpId);
+              }
+            }
           }
         }
       } else {
@@ -146,6 +171,8 @@ export const usePhotoMemoryStore = create<
       if (photoError) {
         throw new Error(photoError.message);
       }
+
+      console.log("Photo saved successfully with RSVP ID:", rsvpId);
 
       // Update state with success
       set({
