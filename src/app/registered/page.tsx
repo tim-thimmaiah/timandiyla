@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import PageTransition from "@/components/PageTransition";
-import RSVPConfirmation from "@/components/RSVPConfirmation";
 import PolaroidFrame from "@/components/PolaroidFrame";
 import { useRSVPStore } from "@/lib/rsvpStore";
 import { usePhotoMemoryStore } from "@/lib/photoStore";
@@ -62,19 +61,25 @@ export default function RegisteredPage() {
             </div>
             <p className="text-xl mb-4">~ we can't wait to see you ~</p>
             {isClient && photoData && (
-              <div className="mt-8 pt-8">
-                <div className="flex justify-center max-w-[250px] mx-auto">
-                  <PolaroidFrame photoData={photoData} note={note} />
+              <div className="flex flex-col gap-8 items-center max-w-[350px] mx-auto relative mt-12">
+                <div className="relative w-full -top-10 aspect-3/4 rotate-4">
+                  <PolaroidFrame
+                    photoData={photoData}
+                    note={note}
+                    isLast={true}
+                    setIsDragging={() => {}}
+                    isDragging={false}
+                    setCardDrivenProps={() => {}}
+                    setIsDragOffBoundary={() => {}}
+                    setDirection={() => {}}
+                  />
                 </div>
               </div>
             )}
-            <p className="text-sm text-redz-600 mt-6">
-              A confirmation email has been sent to your provided email address.
-            </p>
           </div>
           <div className="mt-8">
             <Link
-              href="/"
+              href="/event"
               className="px-6 py-3 bg-redz-700 text-white rounded-md hover:bg-redz-800 transition-colors"
             >
               view event details

@@ -5,30 +5,33 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import PageTransition from "@/components/PageTransition";
 import CameraCapture from "@/components/CameraCapture";
-import PolaroidFrame, { BadgeType } from "@/components/PolaroidFrame";
+import PolaroidFrame from "@/components/PolaroidFrame";
 import { usePhotoMemoryStore } from "@/lib/photoStore";
 import { useRSVPStore } from "@/lib/rsvpStore";
 
 export default function PhotoMemoryPage() {
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
-  const [step, setStep] = useState<"intro" | "camera" | "note" | "preview">(
-    "intro"
-  );
+  const [step, setStep] = useState<
+    "intro" | "camera" | "note" | "preview" | "saving"
+  >("intro");
   const [shouldShake, setShouldShake] = useState(false);
-  const [selectedBadge, setSelectedBadge] = useState<BadgeType>(null);
 
   // Get state and actions from our stores
   const {
     photoData,
     note,
+    isSubmitting,
+    isSubmitted,
+    error,
     setPhotoData,
     setNote,
     setIsCapturing,
     resetPhotoMemory,
+    savePhotoMemory,
   } = usePhotoMemoryStore();
 
-  const {} = useRSVPStore();
+  const { name, email } = useRSVPStore();
 
   // Fix hydration issues by only rendering on the client
   useEffect(() => {
@@ -57,10 +60,15 @@ export default function PhotoMemoryPage() {
   };
 
   // Handle form submission
-  const handleSubmit = () => {
-    // In a real implementation, you would save the photo and note here
-    // For now, we'll just redirect to the registered page
-    router.push("/registered");
+  const handleSubmit = async () => {
+    setStep("saving");
+    try {
+      await savePhotoMemory();
+      // Don't navigate here - let the useEffect handle it
+    } catch (err) {
+      console.error("Error in handleSubmit:", err);
+      // Stay on the saving step to show the error
+    }
   };
 
   // Handle skip
@@ -75,6 +83,22 @@ export default function PhotoMemoryPage() {
       setShouldShake(false);
     }
   }, [step]);
+
+  // Watch for submission status changes
+  useEffect(() => {
+    if (isSubmitted) {
+      console.log("Photo submitted successfully, navigating to /registered");
+      // Add a small delay to ensure state is fully updated
+      setTimeout(() => {
+        router.push("/registered");
+      }, 500);
+    }
+  }, [isSubmitted, router]);
+
+  // Log RSVP data on mount
+  useEffect(() => {
+    console.log("RSVP data in photo-memory page:", { name, email });
+  }, [name, email]);
 
   if (!isClient) {
     return null; // Prevent hydration issues
@@ -190,14 +214,14 @@ export default function PhotoMemoryPage() {
                           }}
                           className="px-4 py-2 bg-transparent text-redz-700 rounded-md hover:bg-redz-50 transition-colors"
                         >
-                          Back
+                          back
                         </button>
 
                         <button
                           onClick={() => setStep("preview")}
                           className="px-6 py-3 text-xl bg-redz-700 text-white rounded-md hover:bg-redz-800 transition-colors"
                         >
-                          Preview
+                          preview
                         </button>
                       </div>
                     </div>
@@ -214,6 +238,10 @@ export default function PhotoMemoryPage() {
                         note={note}
                         isLast={true}
                         setIsDragging={() => {}}
+                        isDragging={false}
+                        setCardDrivenProps={() => {}}
+                        setIsDragOffBoundary={() => {}}
+                        setDirection={() => {}}
                       />
                     </div>
                   </div>
@@ -223,15 +251,35 @@ export default function PhotoMemoryPage() {
                       onClick={() => setStep("note")}
                       className="px-4 py-2 bg-transparent text-redz-700 rounded-md hover:bg-redz-50 transition-colors"
                     >
-                      Edit
+                      edit
                     </button>
 
                     <button
                       onClick={handleSubmit}
                       className="px-6 py-3 text-xl bg-redz-700 text-white rounded-md hover:bg-redz-800 transition-colors"
+                      disabled={isSubmitting}
                     >
-                      Finish
+                      finish
                     </button>
+                  </div>
+                </div>
+              )}
+              {step === "saving" && (
+                <div className="space-y-8 font-serif italic text-center">
+                  <div className="flex flex-col items-center">
+                    <div className="w-16 h-16 border-t-4 border-redz-700 border-solid rounded-full animate-spin"></div>
+                    <p className="mt-4 text-xl">Saving your photo memory...</p>
+                    {error && (
+                      <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-md">
+                        {error}
+                        <button
+                          onClick={() => setStep("preview")}
+                          className="block mt-2 px-4 py-2 bg-redz-700 text-white rounded-md hover:bg-redz-800 transition-colors mx-auto"
+                        >
+                          Try Again
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

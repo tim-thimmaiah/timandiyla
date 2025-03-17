@@ -2,8 +2,13 @@ import Link from "next/link";
 import PageTransition from "@/components/PageTransition";
 import PolaroidCarousel from "@/components/PolaroidCarousel";
 import { polaroidData } from "@/constants/polaroidData";
+import { fetchAllPhotos } from "@/lib/photoService";
 
-export default function Home() {
+// Make the home page a Server Component to fetch photos at request time
+export default async function Home() {
+  // Fetch both static and user-submitted photos
+  const allPhotos = await fetchAllPhotos(polaroidData);
+
   return (
     <PageTransition>
       <div className="min-h-screen p-4 md:p-8 flex flex-col items-center justify-center font-serif italic">
@@ -27,7 +32,7 @@ export default function Home() {
           </div>
           <div className="mb-4">
             <div className="px-4 md:px-0 -top-10 relative">
-              <PolaroidCarousel polaroids={polaroidData} />
+              <PolaroidCarousel polaroids={allPhotos} />
             </div>
           </div>
           <div className="text-center text-sm">
@@ -36,7 +41,7 @@ export default function Home() {
           </div>
           <div className="py-4 text-center">
             <Link href="/rsvp">
-              <button className="p-4 md:p-6 mx-auto min-w-[250px] md:min-w-[300px] text-white rounded-sm text-lg font-medium bg-[#A0304F]">{`rsvp`}</button>
+              <button className="p-4 md:p-6 mx-auto min-w-[250px] md:min-w-[300px] text-white rounded-sm text-lg font-medium bg-[#A0304F] cursor-pointer hover:bg-[#A0304F]/80 transition-colors">{`rsvp`}</button>
             </Link>
           </div>
         </main>
@@ -49,10 +54,10 @@ export default function Home() {
               Event Details
             </Link>
             <Link
-              href="/faq"
+              href="/photo-memory"
               className="px-4 md:px-6 py-2 md:py-3 transition-colors underline underline-offset-4 hover:text-[#A0304F]"
             >
-              FAQ
+              Add Photo
             </Link>
           </nav>
         </footer>

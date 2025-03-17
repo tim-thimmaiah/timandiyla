@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { supabase } from "./supabase";
 
 // Define the type for our RSVP form state
 export type RSVPFormState = {
@@ -80,22 +81,25 @@ export const useRSVPStore = create<RSVPFormState & RSVPFormActions>(
       try {
         set({ isSubmitting: true, error: null });
 
-        // TODO: Implement the actual submission to Supabase
-        // This will be implemented later as requested
+        // Filter out empty guest names
+        const validGuests = guests.filter((guest) => guest.trim() !== "");
 
-        // For now, we'll log the form data that would be sent to Supabase
-        console.log("Form data to be submitted:", {
+        // Insert the RSVP data into Supabase
+        const { error: supabaseError } = await supabase.from("rsvps").insert({
           name,
           email,
-          guests,
+          guests: validGuests,
           message,
+          created_at: new Date().toISOString(),
         });
 
-        // Simulate a successful submission for now
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        if (supabaseError) {
+          throw new Error(supabaseError.message);
+        }
 
         set({ isSubmitted: true, isSubmitting: false });
       } catch (error) {
+        console.error("RSVP submission error:", error);
         set({
           isSubmitting: false,
           error:

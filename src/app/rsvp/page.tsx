@@ -32,12 +32,14 @@ export default function RSVPPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await submitForm();
+  };
 
-    // If submission was successful, redirect to the photo page
+  // Watch for isSubmitted changes and redirect when true
+  useEffect(() => {
     if (isSubmitted && !error) {
       router.push("/photo-memory");
     }
-  };
+  }, [isSubmitted, error, router]);
 
   // Fix hydration issues by only rendering form controls on the client
   useEffect(() => {
@@ -96,7 +98,7 @@ export default function RSVPPage() {
                   onClick={addGuest}
                   className="w-full px-4 py-3 bg-chardon-100 text-redz-700 rounded-md hover:bg-chardon-200 transition-colors cursor-pointer"
                 >
-                  Add Additional Guest
+                  add additional guest
                 </button>
 
                 {guests.length > 0 && (
@@ -176,21 +178,31 @@ export default function RSVPPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-6 py-4 bg-redz-700 text-white rounded-md hover:bg-redz-800 transition-colors disabled:bg-gray-400 w-full cursor-pointer"
+                    className="px-6 py-4 bg-redz-700 text-white rounded-md hover:bg-redz-800 transition-colors disabled:bg-redz-100 w-full cursor-pointer"
                   >
-                    {isSubmitting ? "Submitting..." : "Submit RSVP"}
+                    {isSubmitting ? "submitting..." : "submit rsvp"}
                   </button>
                 </div>
               </form>
             )}
           </div>
-
-          <div className="mt-8 text-center">
-            <Link href="/" className="text-black hover:underline">
-              Back to Home
-            </Link>
-          </div>
         </main>
+        <footer className="mt-6 md:mt-4 pt-0 md:pt-0 text-center text-sm text-[#A0304F]">
+          <nav className="flex flex-wrap justify-center gap-4 mt-6 md:mt-8">
+            <Link
+              href="/"
+              className="px-4 md:px-6 py-2 md:py-3 transition-colors underline underline-offset-4 hover:text-[#A0304F]"
+            >
+              Back Home
+            </Link>
+            <Link
+              href="/event"
+              className="px-4 md:px-6 py-2 md:py-3 transition-colors underline underline-offset-4 hover:text-[#A0304F]"
+            >
+              Event Details
+            </Link>
+          </nav>
+        </footer>
       </div>
     </PageTransition>
   );

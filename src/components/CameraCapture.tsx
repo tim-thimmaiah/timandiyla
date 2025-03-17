@@ -147,7 +147,7 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({
       {/* Camera controls */}
       <div className="mt-4 flex justify-between">
         <button onClick={onCancel} className="px-4 py-2 transition-colors">
-          Cancel
+          cancel
         </button>
 
         <button
@@ -155,7 +155,7 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({
           disabled={!cameraReady}
           className="px-4 py-2 bg-transparent text-redz-700 rounded-md hover:bg-redz-50 transition-colors disabled:opacity-50"
         >
-          Switch Camera
+          switch camera
         </button>
 
         <button
@@ -163,7 +163,7 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({
           disabled={!cameraReady || countdown !== null}
           className="px-4 py-2 bg-redz-700 text-white rounded-md hover:bg-redz-800 transition-colors disabled:opacity-50"
         >
-          {countdown ? `Taking photo in ${countdown}...` : "Take Photo"}
+          {countdown ? `taking photo in ${countdown}...` : "take photo"}
         </button>
       </div>
     </div>
