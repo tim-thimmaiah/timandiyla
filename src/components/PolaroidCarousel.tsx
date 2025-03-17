@@ -36,10 +36,6 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
   polaroids,
   className = "",
 }) => {
-  // Log incoming polaroids to verify isRsvp property
-  const rsvpCount = polaroids.filter((p) => p.isRsvp === true).length;
-  console.log("PolaroidCarousel: Incoming polaroids with isRsvp:", rsvpCount);
-
   // Store the original polaroids for infinite cycling with explicit isRsvp handling
   const originalPolaroids = useRef<PolaroidItem[]>(
     polaroids.map((item, index) => {
@@ -54,15 +50,6 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
     })
   ).current;
 
-  // Log original polaroids to verify isRsvp property is preserved
-  const originalRsvpCount = originalPolaroids.filter(
-    (p) => p.isRsvp === true
-  ).length;
-  console.log(
-    "PolaroidCarousel: Original polaroids with isRsvp:",
-    originalRsvpCount
-  );
-
   // Initialize cards with explicit isRsvp handling
   const [cards, setCards] = useState<PolaroidItem[]>(
     originalPolaroids.map((item) => ({
@@ -73,29 +60,6 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
       isRsvp: item.isRsvp === true,
     }))
   );
-
-  // Log initial cards to verify isRsvp property is preserved
-  const initialCardsRsvpCount = cards.filter((c) => c.isRsvp === true).length;
-  console.log(
-    "PolaroidCarousel: Initial cards with isRsvp:",
-    initialCardsRsvpCount
-  );
-
-  // Add a useEffect to log the cards whenever they change
-  useEffect(() => {
-    const cardsWithRsvpCount = cards.filter((c) => c.isRsvp === true).length;
-    console.log(
-      "PolaroidCarousel: Cards updated with isRsvp:",
-      cardsWithRsvpCount
-    );
-
-    if (cardsWithRsvpCount > 0) {
-      console.log(
-        "PolaroidCarousel: First card with isRsvp:",
-        cards.find((c) => c.isRsvp === true)
-      );
-    }
-  }, [cards]);
 
   const [direction, setDirection] = useState<"left" | "right" | null>(null);
   const [isDragging, setIsDragging] = useState(false);

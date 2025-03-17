@@ -34,13 +34,7 @@ export default function DynamicPolaroidCarousel({
       setLoading(true);
       setError(null);
 
-      console.log("DynamicPolaroidCarousel: Starting to fetch photos from API");
       const response = await fetch("/api/photos");
-
-      console.log(
-        "DynamicPolaroidCarousel: API response status:",
-        response.status
-      );
 
       if (!response.ok) {
         throw new Error(
@@ -50,11 +44,7 @@ export default function DynamicPolaroidCarousel({
 
       const data = await response.json();
 
-      console.log("Raw API response data:", data);
-
       if (data.photos && data.photos.length > 0) {
-        console.log("Raw API photos:", data.photos);
-
         // Create a new array with explicit isRsvp property
         const photosWithRsvp = data.photos.map((photo: unknown) => {
           // Cast to a more specific type
@@ -72,12 +62,8 @@ export default function DynamicPolaroidCarousel({
             isRsvp: true, // Force isRsvp to be true
           };
 
-          console.log("Processed API photo:", processedPhoto);
-
           return processedPhoto;
         });
-
-        console.log("All API photos with forced isRsvp:", photosWithRsvp);
 
         // Combine API photos with initial (static) photos
         const combinedPhotos = [
@@ -85,16 +71,9 @@ export default function DynamicPolaroidCarousel({
           ...initialPolaroidsRef.current,
         ];
 
-        console.log(
-          `DynamicPolaroidCarousel: Combined ${photosWithRsvp.length} API photos with ${initialPolaroidsRef.current.length} static photos`
-        );
-
         // Set the state with the combined photos
         setPolaroids(shuffleArray(combinedPhotos));
       } else {
-        console.log(
-          "DynamicPolaroidCarousel: No photos returned from API, using initial polaroids only"
-        );
         setPolaroids(initialPolaroidsRef.current);
       }
     } catch (err) {
@@ -117,14 +96,6 @@ export default function DynamicPolaroidCarousel({
         // Use strict equality check
         const apiPhotos = prevPolaroids.filter(
           (photo) => photo.isRsvp === true
-        );
-
-        // Log the filtered API photos
-        console.log(
-          "DynamicPolaroidCarousel: Filtered API photos:",
-          apiPhotos.length,
-          "out of",
-          prevPolaroids.length
         );
 
         return shuffleArray([...apiPhotos, ...initialPolaroids]);
@@ -153,27 +124,6 @@ export default function DynamicPolaroidCarousel({
     return <div className="text-center text-red-500">Error: {error}</div>;
   }
 
-  console.log("DynamicPolaroidCarousel: Polaroids:", polaroids);
-
-  // Log the number of polaroids with isRsvp
-  const polaroidsWithRsvpCount = polaroids.filter(
-    (p) => p.isRsvp === true
-  ).length;
-  console.log(
-    "DynamicPolaroidCarousel: Polaroids with isRsvp before passing to PolaroidCarousel:",
-    polaroidsWithRsvpCount
-  );
-
-  // Log all polaroids to check their isRsvp values
-  console.log(
-    "DynamicPolaroidCarousel: All polaroids isRsvp values:",
-    polaroids.map((p) => ({
-      note: p.note,
-      isRsvp: p.isRsvp,
-      type: typeof p.isRsvp,
-    }))
-  );
-
   // Create a new array with explicit isRsvp values to pass to PolaroidCarousel
   const processedPolaroids = polaroids.map((p) => ({
     photoData: p.photoData,
@@ -181,15 +131,6 @@ export default function DynamicPolaroidCarousel({
     badge: p.badge,
     isRsvp: p.isRsvp === true,
   }));
-
-  // Log the processed polaroids
-  const processedWithRsvpCount = processedPolaroids.filter(
-    (p) => p.isRsvp === true
-  ).length;
-  console.log(
-    "DynamicPolaroidCarousel: Processed polaroids with isRsvp:",
-    processedWithRsvpCount
-  );
 
   return <PolaroidCarousel polaroids={processedPolaroids} />;
 }
