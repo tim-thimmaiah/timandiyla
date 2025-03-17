@@ -312,9 +312,6 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
   className = "",
 }) => {
   const [hovered, setHovered] = useState(false);
-  const [textureStatus, setTextureStatus] = useState<
-    "loading" | "success" | "error" | "none"
-  >("none");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [scaleFactor, setScaleFactor] = useState(1);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -348,22 +345,6 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
     window.addEventListener("resize", updateScale);
     return () => window.removeEventListener("resize", updateScale);
   }, [isPreview]);
-
-  // Texture status logic
-  useEffect(() => {
-    if (photoData) {
-      setTextureStatus("loading");
-      const loader = new THREE.TextureLoader();
-      loader.load(
-        photoData,
-        () => setTextureStatus("success"),
-        undefined,
-        () => setTextureStatus("error")
-      );
-    } else {
-      setTextureStatus("none");
-    }
-  }, [photoData]);
 
   // Mouse move handler
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
