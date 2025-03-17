@@ -34,11 +34,6 @@ export const polaroidData: PolaroidItem[] = [
     badge: "rsvp",
   },
   {
-    photoData: "/images/2D734436-9413-4D2C-8ED8-9F8AEA5FDEF7IMG_3424.jpg",
-    note: "We can't wait to see you",
-    badge: "coming",
-  },
-  {
     photoData: "/images/73306DBA-B1C5-4B39-ABA8-BC132219A966IMG_5395.jpg",
     note: "Join us in celebration",
     badge: "cantWait",

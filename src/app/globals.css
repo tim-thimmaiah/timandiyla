@@ -1,13 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap'); */
 
 @import "tailwindcss";
 
 :root {
   --background: #FFF4F2;
   --foreground: #DA4D73;
-  --font-handwriting: 'Caveat', cursive;
-  --font-serif: 'EB Garamond', serif;
+  --font-handwriting: var(--font-caveat), cursive;
+  --font-serif: var(--font-eb-garamond), serif;
   --font-sans: var(--font-geist-sans), sans-serif;
 }
 
