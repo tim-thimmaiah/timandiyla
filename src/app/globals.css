@@ -8,7 +8,7 @@
   --foreground: #DA4D73;
   --font-handwriting: 'Caveat', cursive;
   --font-serif: 'EB Garamond', serif;
-  --font-sans: 'Geist', sans-serif;
+  --font-sans: var(--font-geist-sans), sans-serif;
 }
 
 @theme inline {
