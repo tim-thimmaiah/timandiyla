@@ -11,7 +11,7 @@ import { usePhotoMemoryStore } from "@/lib/photoStore";
 export default function RegisteredPage() {
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
-  const { name, email, guests, message, isSubmitted } = useRSVPStore();
+  const { name, guests, isSubmitted } = useRSVPStore();
   const { photoData, note } = usePhotoMemoryStore();
 
   // Redirect to RSVP page if no submission was made
@@ -59,7 +59,7 @@ export default function RegisteredPage() {
                 )}
               </p>
             </div>
-            <p className="text-xl mb-4">~ we can't wait to see you ~</p>
+            <p className="text-xl mb-4">{`~ we can't wait to see you ~`}</p>
             {isClient && photoData && (
               <div className="flex flex-col gap-8 items-center max-w-[350px] mx-auto relative mt-12">
                 <div className="relative w-full -top-10 aspect-3/4 rotate-4">

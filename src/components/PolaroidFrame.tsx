@@ -15,7 +15,7 @@ export interface CardDrivenProps {
 }
 
 interface PolaroidFrameProps {
-  id: string;
+  id?: string;
   photoData: string | null;
   note: string;
   isPreview?: boolean;
