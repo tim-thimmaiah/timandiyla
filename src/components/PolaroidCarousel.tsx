@@ -180,15 +180,6 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
 
             // Explicitly check for true
             const isRsvp = card.isRsvp === true;
-
-            // Log each card's isRsvp status
-            console.log(
-              `Card ${i} isRsvp:`,
-              isRsvp,
-              "Original value:",
-              card.isRsvp
-            );
-
             return (
               <motion.div
                 key={`card-${card.id}`}
