@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import {
   motion,
   useMotionValue,
@@ -240,12 +241,12 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
             }}
           >
             {photoData && (
-              <img
+              <Image
                 src={photoData}
                 alt="Polaroid photo"
+                fill
+                sizes="100%"
                 style={{
-                  width: "100%",
-                  height: "100%",
                   objectFit: "cover",
                   objectPosition: "center",
                 }}
