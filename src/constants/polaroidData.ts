@@ -4,6 +4,7 @@ export interface PolaroidItem {
   photoData: string;
   note: string;
   badge: PolaroidBadge;
+  isRsvp?: boolean;
 }
 
 export const polaroidData: PolaroidItem[] = [

@@ -140,7 +140,7 @@ export const usePhotoMemoryStore = create<
         rsvp_id: rsvpId,
         storage_path: filePath,
         note,
-        approved: false, // Photos need to be approved before they appear on the home page
+        approved: true, // Auto-approve photos so they appear on the home page
       });
 
       if (photoError) {

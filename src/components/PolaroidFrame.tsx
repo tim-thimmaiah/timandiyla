@@ -30,6 +30,7 @@ interface PolaroidFrameProps {
   setIsDragOffBoundary: (boundary: "left" | "right" | null) => void;
   setDirection: (direction: "left" | "right") => void;
   exitDirection?: "left" | "right" | null;
+  isRsvp?: boolean;
 }
 
 const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
@@ -46,12 +47,11 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
   setCardDrivenProps,
   setIsDragOffBoundary,
   setDirection,
+  isRsvp = false,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  // We're using setMousePosition but not the value directly
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   // Disable hover effects when dragging
   useEffect(() => {
@@ -71,14 +71,10 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
     return `${baseFontSize - 6}px`;
   };
 
-  // Hover effects
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      const y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
-      setMousePosition({ x, y });
-    }
+  // Hover effects - simplified to avoid linter errors
+  // This is kept as a placeholder for future hover effect enhancements
+  const handleMouseMove = () => {
+    // Future hover effect code would go here
   };
 
   useEffect(() => {
@@ -150,6 +146,53 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
         onMouseMove={handleMouseMove}
         ref={containerRef}
       >
+        {/* RSVP Badge - Only show for photos from users who have RSVP'd */}
+        {isRsvp && (
+          <div
+            className="box box--4"
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              zIndex: 10,
+              pointerEvents: "none",
+            }}
+          >
+            <div className="box_rotate">
+              <svg
+                enableBackground="new 0 0 300 300"
+                preserveAspectRatio="xMidYMid meet"
+                version="1.1"
+                viewBox="0 0 300 300"
+                x="0px"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+                y="0px"
+                className="text-white font-sans"
+              >
+                <defs>
+                  <path
+                    id="circlePath"
+                    d="M 150, 150 m -40, 0 a 40,40 0 0,1 80,0 a 40,40 0 0,1 -80,0 "
+                  />
+                </defs>
+                <circle cx="150" cy="100" fill="none" r="75" />
+                <g>
+                  <use fill="none" xlinkHref="#circlePath" />
+                  <text fill="#fff" className="text-white font-sans">
+                    <textPath
+                      xlinkHref="#circlePath"
+                      className="text-white font-sans"
+                    >
+                      RSVP | RSVP | RSVP | RSVP | RSVP | RSVP |
+                    </textPath>
+                  </text>
+                </g>
+              </svg>
+            </div>
+          </div>
+        )}
+
         <div
           className={`polaroid-container ${isShaking ? "animate-shake" : ""}`}
           style={{

@@ -12,6 +12,7 @@ interface PolaroidItem {
   note: string;
   badge?: BadgeType;
   id?: number;
+  isRsvp?: boolean;
 }
 
 interface PolaroidCarouselProps {
@@ -45,11 +46,13 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
   );
   const [direction, setDirection] = useState<"left" | "right" | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  // Track if drag is beyond boundary for visual feedback
+
+  // These states are used by the PolaroidFrame component
   const [isDragOffBoundary, setIsDragOffBoundary] = useState<
     "left" | "right" | null
   >(null);
   const [cardDrivenProps, setCardDrivenProps] = useState(initialDrivenProps);
+
   // Counter for generating unique IDs for recycled cards
   const idCounter = useRef(originalPolaroids.length);
 
@@ -175,6 +178,7 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
                   isDragging={isDragging}
                   setIsDragOffBoundary={setIsDragOffBoundary}
                   setDirection={setDirection}
+                  isRsvp={card.isRsvp}
                 />
               </motion.div>
             );

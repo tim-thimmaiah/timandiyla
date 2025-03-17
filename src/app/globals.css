@@ -8,6 +8,7 @@
   --foreground: #DA4D73;
   --font-handwriting: 'Caveat', cursive;
   --font-serif: 'EB Garamond', serif;
+  --font-sans: 'Geist', sans-serif;
 }
 
 @theme inline {
@@ -93,4 +94,66 @@ body {
 /* Add handwriting font class */
 .font-handwriting {
   font-family: var(--font-handwriting);
+}
+
+/* RSVP Badge Styles */
+.box--4 {
+  position: relative;
+}
+
+.box--4 .btn {
+  display: block;
+  position: absolute;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  top: -45px;
+  right: -45px;
+  background-color: #000;
+}
+
+.box--4 .box_rotate {
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.box--4 .box_rotate:before {
+  content: "";
+  display: block;
+  border-radius: 50%;
+  width: 170px;
+  height: 170px;
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  box-sizing: border-box;
+  border: 30px solid var(--foreground);
+}
+
+.box--4 svg {
+  width: 494px;
+  height: auto;
+  position: absolute;
+  top: -242px;
+  right: -244px;
+  animation: rotate 8s linear infinite;
+  font-family: var(--font-sans);
+}
+
+.box--4 text {
+  font-size: 10px;
+  font-weight: bold;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
