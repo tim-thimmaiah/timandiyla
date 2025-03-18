@@ -91,6 +91,7 @@ export default function RSVPPage() {
                     className="w-full px-4 py-3 border-2 border-redz-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-4 focus:ring-redz-300 focus:ring-offset-chardon-50"
                     placeholder="Your Name"
                     required
+                    autoComplete="name"
                   />
                 </div>
                 <button
@@ -154,6 +155,7 @@ export default function RSVPPage() {
                     className="w-full px-4 py-3 border-2 border-redz-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-4 focus:ring-redz-300 focus:ring-offset-chardon-50"
                     placeholder="your.email@example.com"
                     required
+                    autoComplete="email"
                   />
                 </div>
 
