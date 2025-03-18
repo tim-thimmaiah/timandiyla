@@ -5,9 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import PolaroidFrame, { CardDrivenProps } from "./PolaroidFrame";
 
 // Define BadgeType here since it's not exported from PolaroidFrame
-export type BadgeType = "new" | "favorite" | "important" | string;
+export type BadgeType = "new" | "favorite" | "important" | "cantWait" | string;
 
-interface PolaroidItem {
+export interface PolaroidItem {
   photoData: string;
   note: string;
   badge?: BadgeType;
@@ -162,6 +162,11 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
       <div className="text-center text-gray-500">No polaroids to display</div>
     );
   }
+
+  console.log(
+    "cards to render",
+    cards.filter((card) => card.isRsvp === true)
+  );
 
   return (
     <motion.div

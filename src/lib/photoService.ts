@@ -172,3 +172,79 @@ export async function fetchPhotosApi(): Promise<PolaroidItem[]> {
     return [];
   }
 }
+
+/**
+ * Fetches and combines both user-submitted and static photos in a format ready for the PolaroidCarousel
+ * This is a server action that fetches photos at request time, processes them, and returns them ready to use
+ */
+export async function fetchCombinedPhotos(
+  staticPhotos: PolaroidItem[]
+): Promise<PolaroidItem[]> {
+  try {
+    console.log("fetchCombinedPhotos: Starting...");
+
+    // Fetch approved photos from the database with rsvp_id information
+    const { data: photos, error } = await supabase
+      .from("photos")
+      .select("*, rsvps:rsvp_id(*)")
+      .eq("approved", true)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching approved photos:", error);
+      return staticPhotos;
+    }
+
+    console.log(
+      `fetchCombinedPhotos: Found ${photos?.length || 0} user-submitted photos`
+    );
+
+    if (!photos || photos.length === 0) {
+      console.log(
+        "fetchCombinedPhotos: No user photos, returning static photos only"
+      );
+      return staticPhotos.map((photo, index) => ({
+        ...photo,
+        id: index,
+        isRsvp: false,
+      }));
+    }
+
+    // Process user-submitted photos
+    const userPhotos = photos.map((photo: PhotoFromDB) => {
+      // Get the public URL for the photo
+      const { data } = supabase.storage
+        .from("photos")
+        .getPublicUrl(photo.storage_path);
+
+      // Assign a random badge from the available types
+      const badgeTypes: PolaroidBadge[] = ["cantWait", "rsvp", "coming"];
+      const randomBadge =
+        badgeTypes[Math.floor(Math.random() * badgeTypes.length)];
+
+      return {
+        photoData: data.publicUrl,
+        note: photo.note || "",
+        badge: randomBadge,
+        isRsvp: photo.rsvp_id !== null,
+      };
+    });
+
+    // Process static photos to ensure consistent format
+    const processedStaticPhotos = staticPhotos.map((photo) => ({
+      ...photo,
+      isRsvp: false,
+    }));
+
+    // Combine and shuffle all photos
+    const combinedPhotos = [...userPhotos, ...processedStaticPhotos];
+    return shuffleArray(combinedPhotos);
+  } catch (error) {
+    console.error("Error in fetchCombinedPhotos:", error);
+    return staticPhotos.map((photo, index) => ({
+      ...photo,
+      id: index,
+      isRsvp: false,
+    }));
+  }
+}

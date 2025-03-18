@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { fetchPhotosApi } from "@/lib/photoService";
 
+// This API route is now only used as a fallback or for client-side fetching if needed
 export async function GET() {
   try {
     console.log("API route: Fetching photos...");
