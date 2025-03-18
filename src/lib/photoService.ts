@@ -41,15 +41,9 @@ export async function fetchApprovedPhotos(): Promise<PolaroidItem[]> {
         .from("photos")
         .getPublicUrl(photo.storage_path);
 
-      // Assign a random badge from the available types
-      const badgeTypes: PolaroidBadge[] = ["cantWait", "rsvp", "coming"];
-      const randomBadge =
-        badgeTypes[Math.floor(Math.random() * badgeTypes.length)];
-
       return {
         photoData: data.publicUrl,
         note: photo.note || "",
-        badge: randomBadge,
       };
     });
   } catch (error) {
@@ -147,18 +141,12 @@ export async function fetchPhotosApi(): Promise<PolaroidItem[]> {
         data.publicUrl
       );
 
-      // Assign a random badge from the available types
-      const badgeTypes: PolaroidBadge[] = ["cantWait", "rsvp", "coming"];
-      const randomBadge =
-        badgeTypes[Math.floor(Math.random() * badgeTypes.length)];
-
       // Check if this photo has an associated RSVP
       const isRsvp = photo.rsvp_id !== null;
 
       return {
         photoData: data.publicUrl,
         note: photo.note || "",
-        badge: randomBadge,
         isRsvp,
       };
     });
@@ -217,15 +205,9 @@ export async function fetchCombinedPhotos(
         .from("photos")
         .getPublicUrl(photo.storage_path);
 
-      // Assign a random badge from the available types
-      const badgeTypes: PolaroidBadge[] = ["cantWait", "rsvp", "coming"];
-      const randomBadge =
-        badgeTypes[Math.floor(Math.random() * badgeTypes.length)];
-
       return {
         photoData: data.publicUrl,
         note: photo.note || "",
-        badge: randomBadge,
         isRsvp: photo.rsvp_id !== null,
       };
     });

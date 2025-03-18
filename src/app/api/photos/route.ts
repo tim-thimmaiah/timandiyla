@@ -13,7 +13,6 @@ export async function GET() {
       console.log("API route: First photo sample:", {
         photoUrl: photos[0].photoData,
         note: photos[0].note,
-        badge: photos[0].badge,
       });
     } else {
       console.log("API route: No photos returned from fetchPhotosApi");

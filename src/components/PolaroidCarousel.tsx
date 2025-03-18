@@ -58,7 +58,6 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
       return {
         photoData: item.photoData,
         note: item.note,
-        badge: item.badge,
         id: index,
         isRsvp: item.isRsvp === true,
         // Add transform properties to the card
@@ -72,7 +71,6 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
     originalPolaroids.map((item) => ({
       photoData: item.photoData,
       note: item.note,
-      badge: item.badge,
       id: item.id,
       isRsvp: item.isRsvp === true,
       // Add transform properties to the card
@@ -131,7 +129,6 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
           const nextCard = {
             photoData: sourceCard.photoData,
             note: sourceCard.note,
-            badge: sourceCard.badge,
             id: idCounter.current,
             isRsvp: sourceCard.isRsvp === true,
             // Add transform properties to the new card
