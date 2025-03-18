@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import { PolaroidItem, PolaroidBadge } from "@/constants/polaroidData";
+import { PolaroidItem } from "@/constants/polaroidData";
 
 // Define the type for a photo from the database
 export type PhotoFromDB = {

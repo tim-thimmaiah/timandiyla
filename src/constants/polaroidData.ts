@@ -1,5 +1,3 @@
-export type PolaroidBadge = "cantWait" | "rsvp" | "coming";
-
 export interface PolaroidItem {
   photoData: string;
   note: string;
