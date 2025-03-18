@@ -5,6 +5,7 @@ import {
   useMotionValue,
   useTransform,
   useMotionValueEvent,
+  PanInfo,
 } from "framer-motion";
 
 // Define the type for card driven props
@@ -88,30 +89,54 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
 
   const fontSize = calculateFontSize();
 
-  //animation
+  // Animation values
   const x = useMotionValue(0);
-  // const isMobile = useMediaQuery("(max-width: 768px)");
-
   const offsetBoundary = 150;
 
-  const inputX = [offsetBoundary * -1, 0, offsetBoundary];
+  // Improved animation curves for more natural movement
+  const inputX = [-offsetBoundary, 0, offsetBoundary];
   const outputX = [-200, 0, 200];
-  const outputY = [50, 0, 50];
-  const outputRotate = [-40, 0, 40];
-  const outputActionScaleBadAnswer = [3, 1, 0.3];
-  const outputActionScaleRightAnswer = [0.3, 1, 3];
-  const drivenX = useTransform(x, inputX, outputX);
-  const drivenY = useTransform(x, inputX, outputY);
-  const drivenRotation = useTransform(x, inputX, outputRotate);
+  const outputY = [30, 0, 30]; // Less upward movement for a more subtle feel
+  const outputRotate = [-25, 0, 25]; // Less rotation for a more subtle rotate
+  const outputActionScaleBadAnswer = [2.5, 1, 0.4]; // More subtle scaling
+  const outputActionScaleRightAnswer = [0.4, 1, 2.5]; // More subtle scaling
+
+  // Create more responsive transforms
+  const drivenX = useTransform(x, inputX, outputX, {
+    clamp: false, // Allow for more natural movement beyond boundaries
+  });
+
+  const drivenY = useTransform(x, inputX, outputY, {
+    clamp: false,
+  });
+
+  const drivenRotation = useTransform(x, inputX, outputRotate, {
+    clamp: false,
+  });
+
   const drivenActionLeftScale = useTransform(
     x,
     inputX,
     outputActionScaleBadAnswer
   );
+
   const drivenActionRightScale = useTransform(
     x,
     inputX,
     outputActionScaleRightAnswer
+  );
+
+  // Add opacity based on swipe direction
+  const leftOpacity = useTransform(
+    x,
+    [-offsetBoundary, -offsetBoundary / 2, 0],
+    [1, 0.8, 0]
+  );
+
+  const rightOpacity = useTransform(
+    x,
+    [0, offsetBoundary / 2, offsetBoundary],
+    [0, 0.8, 1]
   );
 
   useMotionValueEvent(x, "change", (latest) => {
@@ -122,6 +147,27 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
       buttonScaleRight: drivenActionRightScale.get(),
     }));
   });
+
+  // Handle drag end with velocity for more natural swipe
+  const handleDragEnd = (
+    event: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo
+  ) => {
+    setIsDragging(false);
+    setIsDragOffBoundary(null);
+
+    const xOffset = info.offset.x;
+    const velocity = info.velocity.x;
+    const direction = xOffset > 0 ? "right" : "left";
+
+    // Determine if card should exit based on position or velocity
+    const shouldExit =
+      Math.abs(xOffset) > offsetBoundary || Math.abs(velocity) > 800; // Exit if velocity is high enough
+
+    if (shouldExit) {
+      setDirection(direction);
+    }
+  };
 
   return (
     <>
@@ -134,11 +180,15 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
           y: drivenY,
           rotate: drivenRotation,
           x: drivenX,
+          boxShadow: isHovered
+            ? "0 15px 30px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.1)"
+            : "0 10px 20px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.1)",
         }}
         transition={{
-          rotateX: { duration: 0.1 },
-          rotateY: { duration: 0.1 },
-          scale: { duration: 0.1 },
+          type: "spring",
+          damping: 20,
+          stiffness: 300,
+          restDelta: 0.001,
         }}
         onMouseEnter={() =>
           isLast && !isDragging && !exitDirection && setIsHovered(true)
@@ -147,6 +197,32 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
         onMouseMove={handleMouseMove}
         ref={containerRef}
       >
+        {/* Left swipe indicator */}
+        <motion.div
+          className="absolute top-5 left-5 z-10 bg-red-500 text-white px-3 py-1 rounded-full font-bold transform -rotate-12"
+          style={{
+            opacity: leftOpacity,
+            scale: drivenActionLeftScale,
+            originX: 0,
+            originY: 0,
+          }}
+        >
+          NOPE
+        </motion.div>
+
+        {/* Right swipe indicator */}
+        <motion.div
+          className="absolute top-5 right-5 z-10 bg-green-500 text-white px-3 py-1 rounded-full font-bold transform rotate-12"
+          style={{
+            opacity: rightOpacity,
+            scale: drivenActionRightScale,
+            originX: 1,
+            originY: 0,
+          }}
+        >
+          YES
+        </motion.div>
+
         {/* RSVP Badge - Only show for photos from users who have RSVP'd */}
         {isRsvp && (
           <div
@@ -201,9 +277,6 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
             height: "100%",
             backgroundColor: "#ffffff",
             borderRadius: "8px",
-            boxShadow: isHovered
-              ? "0 15px 30px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.1)"
-              : "0 10px 20px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.1)",
             position: "relative",
             overflow: "hidden",
             transformStyle: "preserve-3d",
@@ -323,13 +396,17 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
       <motion.div
         id={id}
         className={`absolute w-full aspect-[100/150] ${
-          !isDragging ? "hover:cursor-grab" : ""
+          !isDragging ? "hover:cursor-grab" : "cursor-grabbing"
         }`}
         drag="x"
         dragSnapToOrigin
-        dragElastic={false ? 0.2 : 0.06}
+        dragElastic={0.15} // More elastic for better feel
         dragConstraints={{ left: 0, right: 0 }}
-        dragTransition={{ bounceStiffness: 1000, bounceDamping: 50 }}
+        dragTransition={{
+          bounceStiffness: 600,
+          bounceDamping: 40,
+          power: 0.5, // More natural feeling swipe
+        }}
         onDragStart={() => setIsDragging(true)}
         onDrag={(_, info) => {
           const offset = info.offset.x;
@@ -342,17 +419,7 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
             setIsDragOffBoundary(null);
           }
         }}
-        onDragEnd={(_, info) => {
-          setIsDragging(false);
-          setIsDragOffBoundary(null);
-          const isOffBoundary =
-            info.offset.x > offsetBoundary || info.offset.x < -offsetBoundary;
-          const direction = info.offset.x > 0 ? "right" : "left";
-
-          if (isOffBoundary) {
-            setDirection(direction);
-          }
-        }}
+        onDragEnd={handleDragEnd}
         style={{ x }}
       ></motion.div>
     </>
