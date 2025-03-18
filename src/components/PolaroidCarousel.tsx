@@ -102,8 +102,10 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
 
   useEffect(() => {
     if (direction === "left" || direction === "right") {
-      if (isProcessingCardChange.current) return;
-      isProcessingCardChange.current = true;
+      if (isProcessingCardChange.current) {
+        // Already processing, let this complete before handling new direction
+        // No need to set it again, the button click already set it
+      }
 
       // Remove the top card
       setCards((prevCards) => {
@@ -149,11 +151,10 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
       // Reset processing flag after a short delay to prevent rapid changes
       setTimeout(() => {
         isProcessingCardChange.current = false;
+        // Reset direction after processing is complete
+        setDirection(null);
       }, 300);
     }
-
-    // Reset direction after handling
-    setDirection(null);
   }, [direction, originalPolaroids]);
 
   // Card animation variants with improved transitions
@@ -275,7 +276,7 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
                       ? 10
                       : 0,
                 }}
-                layout
+                layout="position"
               >
                 <PolaroidFrame
                   id={`cardDriverWrapper-${card.id}`}
@@ -307,15 +308,17 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
           className="bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() =>
-            !isProcessingCardChange.current && setDirection("right")
-          }
+          onClick={() => {
+            if (!isProcessingCardChange.current) {
+              isProcessingCardChange.current = true;
+              setDirection("right");
+            }
+          }}
           aria-label="Previous photo"
           animate={{
             scale: cardDrivenProps.buttonScaleLeft,
           }}
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
-          disabled={isProcessingCardChange.current}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -336,15 +339,17 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
           className="bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() =>
-            !isProcessingCardChange.current && setDirection("left")
-          }
+          onClick={() => {
+            if (!isProcessingCardChange.current) {
+              isProcessingCardChange.current = true;
+              setDirection("left");
+            }
+          }}
           aria-label="Next photo"
           animate={{
             scale: cardDrivenProps.buttonScaleRight,
           }}
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
-          disabled={isProcessingCardChange.current}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

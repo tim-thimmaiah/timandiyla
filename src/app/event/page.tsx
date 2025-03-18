@@ -1,5 +1,19 @@
 import Link from "next/link";
 import PageTransition from "@/components/PageTransition";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Event Details | Tim & Iyla's Wedding",
+  description:
+    "Details about Tim & Iyla's wedding events in Oakland, California. July 4-5, 2025.",
+  openGraph: {
+    title: "Event Details | Tim & Iyla's Wedding",
+    description:
+      "Details about Tim & Iyla's wedding events in Oakland, California. July 4-5, 2025.",
+    images: ["/og-image.jpg"],
+    type: "website",
+  },
+};
 
 export default function EventPage() {
   return (

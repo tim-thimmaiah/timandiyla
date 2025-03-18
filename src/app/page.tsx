@@ -3,16 +3,25 @@ import PageTransition from "@/components/PageTransition";
 import { polaroidData } from "@/constants/polaroidData";
 import { fetchCombinedPhotos } from "@/lib/photoService";
 import PolaroidCarousel from "@/components/PolaroidCarousel";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Tim & Iyla's Wedding",
+  description:
+    "RSVP to Tim & Iyla's wedding celebration in Oakland, California. July 4-5, 2025.",
+  openGraph: {
+    title: "Tim & Iyla's Wedding",
+    description:
+      "RSVP to Tim & Iyla's wedding celebration in Oakland, California. July 4-5, 2025.",
+    images: ["/og.png"],
+    type: "website",
+  },
+};
 
 // Make the home page a Server Component to fetch initial photos at request time
 export default async function Home() {
   // Fetch both static and user-submitted photos for initial render
   const photos = await fetchCombinedPhotos(polaroidData);
-
-  console.log(
-    "photos",
-    photos.filter((photo) => photo.isRsvp === true)
-  );
 
   return (
     <PageTransition>
@@ -36,7 +45,7 @@ export default async function Home() {
             </svg>
           </div>
           <div className="mb-4">
-            <div className="px-4 md:px-0 -top-10 relative">
+            <div className="px-4 md:px-0 relative">
               <PolaroidCarousel polaroids={photos} />
             </div>
           </div>

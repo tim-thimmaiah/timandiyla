@@ -15,6 +15,7 @@ export function middleware(request: NextRequest) {
         status: 401,
         headers: {
           "WWW-Authenticate": 'Basic realm="Admin Area"',
+          "X-Robots-Tag": "noindex, nofollow, noarchive",
         },
       });
     }
@@ -34,16 +35,22 @@ export function middleware(request: NextRequest) {
         status: 401,
         headers: {
           "WWW-Authenticate": 'Basic realm="Admin Area"',
+          "X-Robots-Tag": "noindex, nofollow, noarchive",
         },
       });
     }
   }
 
   // Continue with the request if authentication is successful or not required
-  return NextResponse.next();
+  const response = NextResponse.next();
+
+  // Add X-Robots-Tag header to prevent indexing
+  response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+
+  return response;
 }
 
-// Configure the middleware to run only on admin routes
+// Configure the middleware to run on all routes
 export const config = {
-  matcher: "/admin/:path*",
+  matcher: "/(.*)",
 };

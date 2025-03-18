@@ -199,7 +199,7 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
       >
         {/* Left swipe indicator */}
         <motion.div
-          className="absolute top-5 left-5 z-10 bg-red-500 text-white px-3 py-1 rounded-full font-bold transform -rotate-12"
+          className="absolute top-5 left-5 z-10 bg-redz-700 text-white px-3 py-1 rounded-full font-bold transform -rotate-12"
           style={{
             opacity: leftOpacity,
             scale: drivenActionLeftScale,
@@ -212,7 +212,7 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
 
         {/* Right swipe indicator */}
         <motion.div
-          className="absolute top-5 right-5 z-10 bg-green-500 text-white px-3 py-1 rounded-full font-bold transform rotate-12"
+          className="absolute top-5 right-5 z-10 bg-emerald-500 text-white px-3 py-1 rounded-full font-bold transform rotate-12"
           style={{
             opacity: rightOpacity,
             scale: drivenActionRightScale,

@@ -17,8 +17,53 @@ const ebGaramond = EB_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Tim & Iyla's Wedding",
-  description: "Wedding website for Tim and Iyla",
+  title: {
+    template: "%s | Tim & Iyla's Wedding",
+    default: "Tim & Iyla's Wedding",
+  },
+  description: "Oakland, California on July 4-5, 2025.",
+  keywords: ["wedding", "Tim and Iyla", "Oakland wedding", "July 2025 wedding"],
+  authors: [{ name: "Tim and Iyla" }],
+  creator: "Tim and Iyla",
+  publisher: "Tim and Iyla",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL("https://timandiyla.com"),
+  openGraph: {
+    title: "Tim & Iyla's Wedding",
+    description: "Oakland, California on July 4-5, 2025.",
+    url: "https://timandiyla.com",
+    siteName: "Tim & Iyla's Wedding",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Tim & Iyla's Wedding",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tim & Iyla's Wedding",
+    description: "Oakland, California on July 4-5, 2025.",
+    images: ["/og.png"],
+  },
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+      "max-image-preview": "none",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -31,6 +76,9 @@ export default function RootLayout({
       lang="en"
       className={`${GeistSans.variable} ${GeistMono.variable} ${caveat.variable} ${ebGaramond.variable}`}
     >
+      <head>
+        <meta name="robots" content="noindex, nofollow" />
+      </head>
       <body className="antialiased bg-[#D9DCFA] font-serif italic">
         {children}
       </body>
