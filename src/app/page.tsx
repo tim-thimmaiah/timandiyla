@@ -68,10 +68,10 @@ export default async function Home() {
               Event Details
             </Link>
             <Link
-              href="/photo-memory"
+              href="/faq"
               className="px-4 md:px-6 py-2 md:py-3 transition-colors underline underline-offset-4 hover:text-[#A0304F]"
             >
-              Add Photo
+              FAQ
             </Link>
           </nav>
         </footer>

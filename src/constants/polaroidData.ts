@@ -67,7 +67,7 @@ export const polaroidData: PolaroidItem[] = [
   },
   {
     photoData: "/images/3A2A1ED3-62E0-492A-8050-F03E3CF7568EIMG_1824.jpg",
-    note: "Please respond by the RSVP date",
+    note: "We're getting married (finally).",
   },
   {
     photoData: "/images/16480F11-35AE-4511-88E5-56358A5476C7IMG_5492.jpg",
