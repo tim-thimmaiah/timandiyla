@@ -29,13 +29,34 @@ export default function FAQPage() {
                 {({ open }) => (
                   <div className="border-2 border-redz-200 p-4 rounded-lg">
                     <Disclosure.Button className="flex w-full justify-between text-left text-xl font-semibold">
-                      <span>What is the dress code?</span>
+                      <span>What is the expected attire?</span>
                       <span className="ml-2">{open ? "−" : "+"}</span>
                     </Disclosure.Button>
                     <Disclosure.Panel className="pt-2 pb-4">
-                      The dress code for our wedding is [Dress Code]. Please
-                      dress accordingly for the weather as portions of our
-                      celebration may be outdoors.
+                      For Friday&apos;s event, the dress code is black-tie
+                      optional. Feel free to throw in a wild outfit change for
+                      the after-party! Saturday&apos;s brunch event will be
+                      &quot;come as you are&quot; - hungover, comfortable, and
+                      ready to dance or nap on the grass. The backyard will be
+                      semi-shaded for both days. The Bay is notorious for
+                      dropping in temperature after sunset so please bring a
+                      coat! *Items to avoid: any heals that will dig into the
+                      grass.
+                    </Disclosure.Panel>
+                  </div>
+                )}
+              </Disclosure>
+              <Disclosure as="div">
+                {({ open }) => (
+                  <div className="border-2 border-redz-200 p-4 rounded-lg">
+                    <Disclosure.Button className="flex w-full justify-between text-left text-xl font-semibold">
+                      <span>Transportation suggestions?</span>
+                      <span className="ml-2">{open ? "−" : "+"}</span>
+                    </Disclosure.Button>
+                    <Disclosure.Panel className="pt-2 pb-4">
+                      We have lots of open street parking around our home, but
+                      we highly recommend taking a ride-share app or public
+                      transportation to get there.
                     </Disclosure.Panel>
                   </div>
                 )}
@@ -45,13 +66,11 @@ export default function FAQPage() {
                 {({ open }) => (
                   <div className="border-2 border-redz-200 p-4 rounded-lg">
                     <Disclosure.Button className="flex w-full justify-between text-left text-xl font-semibold">
-                      <span>Can I bring a plus one?</span>
+                      <span>Are children invited?</span>
                       <span className="ml-2">{open ? "−" : "+"}</span>
                     </Disclosure.Button>
                     <Disclosure.Panel className="pt-2 pb-4">
-                      We&apos;ve reserved spots for those indicated on your
-                      invitation. Please refer to your invitation for details
-                      about plus ones or contact us if you have any questions.
+                      Apologies, but no children.
                     </Disclosure.Panel>
                   </div>
                 )}
@@ -61,25 +80,38 @@ export default function FAQPage() {
                 {({ open }) => (
                   <div className="border-2 border-redz-200 p-4 rounded-lg">
                     <Disclosure.Button className="flex w-full justify-between text-left text-xl font-semibold">
-                      <span>Are children welcome?</span>
+                      <span>What&apos;s the wedding gift situation?</span>
                       <span className="ml-2">{open ? "−" : "+"}</span>
                     </Disclosure.Button>
                     <Disclosure.Panel className="pt-2 pb-4">
-                      [Answer about children at the wedding]
-                    </Disclosure.Panel>
-                  </div>
-                )}
-              </Disclosure>
-
-              <Disclosure as="div">
-                {({ open }) => (
-                  <div className="border-2 border-redz-200 p-4 rounded-lg">
-                    <Disclosure.Button className="flex w-full justify-between text-left text-xl font-semibold">
-                      <span>Will there be parking available?</span>
-                      <span className="ml-2">{open ? "−" : "+"}</span>
-                    </Disclosure.Button>
-                    <Disclosure.Panel className="pt-2 pb-4">
-                      [Parking information]
+                      Please do not feel obligated to give us anything, your
+                      presence is a true gift to us! If you would like to gift
+                      us something, we would greatly appreciate contributions to
+                      our honeymoon fund to Slovenia!
+                      <br />
+                      <br />
+                      Here are some ideas:
+                      <br />
+                      $10 send Iyla with an extra tube of sunscreen
+                      <br />
+                      $15 rent Tim an extra lifevest for kayaking
+                      <br />
+                      $20 Tim&apos;s emergency fund as he always forgets
+                      something (sunglasses, socks, toothpaste, etc)
+                      <br />
+                      $75 send Iyla with the actual amount of sunscreen she
+                      needs PLUS a new straw sunhat (!)
+                      <br />
+                      $100 Laško beer fund, Slovenia&apos;s #1 brew
+                      <br />
+                      $200 upgrade Iyla&apos;s car insurance to premium for
+                      their road trip
+                      <br />
+                      $300 upgrade one of Tim&apos;s flights so he can move his
+                      knees from the back of his neighbor&apos;s seat
+                      <br />
+                      <br />
+                      Find us on venmo: @iyla-ollinger and @tim-thimmaiah
                     </Disclosure.Panel>
                   </div>
                 )}
@@ -105,12 +137,13 @@ export default function FAQPage() {
                 {({ open }) => (
                   <div className="border-2 border-redz-200 p-4 rounded-lg">
                     <Disclosure.Button className="flex w-full justify-between text-left text-xl font-semibold">
-                      <span>When is the RSVP deadline?</span>
+                      <span>Who&apos;s cuter, you or me?</span>
                       <span className="ml-2">{open ? "−" : "+"}</span>
                     </Disclosure.Button>
                     <Disclosure.Panel className="pt-2 pb-4">
-                      Please RSVP by [RSVP Deadline] so we can finalize
-                      arrangements with our vendors.
+                      This is a heavily debated question in the
+                      Ollinger-Thimmaiah household. The answer is always
+                      &quot;you.&quot;
                     </Disclosure.Panel>
                   </div>
                 )}
@@ -120,14 +153,42 @@ export default function FAQPage() {
                 {({ open }) => (
                   <div className="border-2 border-redz-200 p-4 rounded-lg">
                     <Disclosure.Button className="flex w-full justify-between text-left text-xl font-semibold">
-                      <span>
-                        How can I contact you if I have more questions?
-                      </span>
+                      <span>Who&apos;s cuter, you or Wonder?</span>
                       <span className="ml-2">{open ? "−" : "+"}</span>
                     </Disclosure.Button>
                     <Disclosure.Panel className="pt-2 pb-4">
-                      Feel free to reach out to us at [contact email] with any
-                      additional questions or concerns.
+                      Another hot topic in the Ollinger-Thimmaiah household.
+                      Goes without saying… it&apos;s Wonder.
+                    </Disclosure.Panel>
+                  </div>
+                )}
+              </Disclosure>
+
+              <Disclosure as="div">
+                {({ open }) => (
+                  <div className="border-2 border-redz-200 p-4 rounded-lg">
+                    <Disclosure.Button className="flex w-full justify-between text-left text-xl font-semibold">
+                      <span>What is your color palate for the wedding?</span>
+                      <span className="ml-2">{open ? "−" : "+"}</span>
+                    </Disclosure.Button>
+                    <Disclosure.Panel className="pt-2 pb-4">
+                      This is not that kind of wedding. Please wear whatever
+                      colors you like :)
+                    </Disclosure.Panel>
+                  </div>
+                )}
+              </Disclosure>
+
+              <Disclosure as="div">
+                {({ open }) => (
+                  <div className="border-2 border-redz-200 p-4 rounded-lg">
+                    <Disclosure.Button className="flex w-full justify-between text-left text-xl font-semibold">
+                      <span>What weather should we expect?</span>
+                      <span className="ml-2">{open ? "−" : "+"}</span>
+                    </Disclosure.Button>
+                    <Disclosure.Panel className="pt-2 pb-4">
+                      It should be between 65-80 degrees during the day and
+                      55-60 degrees after sunset.
                     </Disclosure.Panel>
                   </div>
                 )}

@@ -104,7 +104,7 @@ export const polaroidData: PolaroidItem[] = [
   },
   {
     photoData: "/images/3B8B2454-5C42-4FB1-BA38-270BA811E084DSC00371.jpg",
-    note: "Please let us know if you can attend",
+    note: "Can't wait to see you there!",
   },
   {
     photoData: "/images/3E3EFBDD-A87A-4F95-BCA1-AD1BFCD09AE9IMG_8087.jpg",
@@ -112,6 +112,6 @@ export const polaroidData: PolaroidItem[] = [
   },
   {
     photoData: "/images/20CF1B3C-D9DD-4A5F-AFCB-48765AAF3F2CIMG_8683.jpg",
-    note: "The big day is almost here!",
+    note: "The big day is near.",
   },
 ];

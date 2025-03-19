@@ -18,8 +18,8 @@ const ebGaramond = EB_Garamond({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Tim & Iyla's Wedding",
-    default: "Tim & Iyla's Wedding",
+    template: "%s | Tim & Iyla's Save the Date",
+    default: "Tim & Iyla's Save the Date",
   },
   description: "Oakland, California on July 4-5, 2025.",
   keywords: ["wedding", "Tim and Iyla", "Oakland wedding", "July 2025 wedding"],
@@ -33,16 +33,16 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL("https://timandiyla.com"),
   openGraph: {
-    title: "Tim & Iyla's Wedding",
+    title: "Tim & Iyla's Save the Date",
     description: "Oakland, California on July 4-5, 2025.",
     url: "https://timandiyla.com",
-    siteName: "Tim & Iyla's Wedding",
+    siteName: "Tim & Iyla's Save the Date",
     images: [
       {
         url: "/og.png",
         width: 1200,
         height: 630,
-        alt: "Tim & Iyla's Wedding",
+        alt: "Tim & Iyla's Save the Date",
       },
     ],
     locale: "en_US",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tim & Iyla's Wedding",
+    title: "Tim & Iyla's Save the Date",
     description: "Oakland, California on July 4-5, 2025.",
     images: ["/og.png"],
   },

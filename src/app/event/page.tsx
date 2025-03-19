@@ -50,7 +50,7 @@ export default function EventPage() {
                 </div>
                 <div className=" pl-4 mb-4">
                   Please arrive by <b>2:00 P.M.</b>. Our reception, ceremony,
-                  and dinner will conclude by <b>8 P.M.</b>
+                  and dinner will conclude by <b>7 P.M.</b>
                 </div>
               </div>
               <p className="mb-0">
@@ -64,7 +64,7 @@ export default function EventPage() {
               </p>
               <p className="mb-2">
                 <strong>Time:</strong> We will be leaving our home to the after
-                party venue around <b>8 P.M.</b>
+                party venue around <b>7:30 P.M.</b>
               </p>
               <p className="mb-2">
                 <strong>Location:</strong> The location is still being
@@ -81,16 +81,20 @@ export default function EventPage() {
             <div className="mb-0">
               <h2 className="text-xl font-semibold mb-0">Brunch</h2>
               <p className="mb-2 text-lg">
-                {`Our wedding ceremony will be held in our backyard garden.`}
+                {`Roll into day two! We are hosting a variety of local bands to host our own mini music festival in our backyard.`}
               </p>
               <div className="flex pt-4">
                 <div>
                   <strong>Time:</strong>
                 </div>
                 <div className=" pl-4 mb-4">
-                  Please arrive around <b>11:00 A.M.</b>.
+                  Please arrive around <b>12:00 P.M.</b>.
                 </div>
               </div>
+              <p className="mb-0">
+                <strong>Special note:</strong> This event is BYOPB - bring your
+                own picnic blanket.
+              </p>
               <p className="mb-0">
                 <strong>Location:</strong> 418 45th St, Oakland, CA 94609
               </p>
