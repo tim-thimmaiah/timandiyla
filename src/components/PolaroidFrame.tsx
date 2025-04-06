@@ -127,17 +127,17 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
   );
 
   // Add opacity based on swipe direction
-  const leftOpacity = useTransform(
-    x,
-    [-offsetBoundary, -offsetBoundary / 2, 0],
-    [1, 0.8, 0]
-  );
+  // const leftOpacity = useTransform(
+  //   x,
+  //   [-offsetBoundary, -offsetBoundary / 2, 0],
+  //   [1, 0.8, 0]
+  // );
 
-  const rightOpacity = useTransform(
-    x,
-    [0, offsetBoundary / 2, offsetBoundary],
-    [0, 0.8, 1]
-  );
+  // const rightOpacity = useTransform(
+  //   x,
+  //   [0, offsetBoundary / 2, offsetBoundary],
+  //   [0, 0.8, 1]
+  // );
 
   useMotionValueEvent(x, "change", (latest) => {
     setCardDrivenProps((state) => ({
