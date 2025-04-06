@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { fetchPhotosApi } from "@/lib/photoService";
+import { polaroidData } from "@/constants/polaroidData";
 
 // This API route is now only used as a fallback or for client-side fetching if needed
 export async function GET() {
   try {
     console.log("API route: Fetching photos...");
-    const photos = await fetchPhotosApi();
+    const photos = await fetchPhotosApi(polaroidData);
     console.log(`API route: Fetched ${photos.length} photos`);
 
     // Log the first photo for debugging (if available)

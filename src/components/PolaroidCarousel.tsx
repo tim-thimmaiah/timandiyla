@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PolaroidFrame, { CardDrivenProps } from "./PolaroidFrame";
 
@@ -13,7 +13,6 @@ export interface PolaroidItem {
   badge?: BadgeType;
   id?: number;
   isRsvp?: boolean;
-  // Add fields for pre-calculated transform values
   randomRotate?: number;
   randomTranslateX?: number;
   randomTranslateY?: number;
@@ -24,7 +23,7 @@ interface PolaroidCarouselProps {
   className?: string;
 }
 
-// Define the initial driven props to match the CardDrivenProps interface
+// Define the initial driven props
 const initialDrivenProps: CardDrivenProps = {
   cardWrapperX: 0,
   buttonScaleLeft: 1,
@@ -32,129 +31,148 @@ const initialDrivenProps: CardDrivenProps = {
   mainBgColor: "#fff4f2", // Default light background color
 };
 
-// Function to get random offset with smoothing to avoid extreme values
-const getRandomOffset = (maxOffset: number) => {
-  // Use a bell curve-like distribution for more natural variation
+// Function to get random offset with smoothing
+const getRandomOffset = (max: number) => {
   const offset = (Math.random() + Math.random() + Math.random()) / 3;
-  return (offset * 2 - 1) * maxOffset;
+  return (offset * 2 - 1) * max;
 };
 
-// Generate card transforms ahead of time instead of in render loop
+// Generate card transforms
 const generateCardTransform = () => {
-  const randomRotate = getRandomOffset(8);
-  const randomTranslateX = getRandomOffset(10);
-  const randomTranslateY = getRandomOffset(10);
-  return { randomRotate, randomTranslateX, randomTranslateY };
+  return {
+    randomRotate: getRandomOffset(8),
+    randomTranslateX: getRandomOffset(10),
+    randomTranslateY: getRandomOffset(10),
+  };
 };
 
 const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
   polaroids,
   className = "",
 }) => {
-  // Store the original polaroids for infinite cycling with explicit isRsvp handling
-  const originalPolaroids = useRef<PolaroidItem[]>(
-    polaroids.map((item, index) => {
-      // Create a new object with explicit properties
-      return {
-        photoData: item.photoData,
-        note: item.note,
-        id: index,
-        isRsvp: item.isRsvp === true,
-        // Add transform properties to the card
-        ...generateCardTransform(),
-      };
-    })
-  ).current;
-
-  // Initialize cards with explicit isRsvp handling
-  const [cards, setCards] = useState<PolaroidItem[]>(
-    originalPolaroids.map((item) => ({
+  // Prepare data - ensure first photo is at index 0
+  const preparedPolaroids = useMemo(() => {
+    return polaroids.map((item, index) => ({
       photoData: item.photoData,
       note: item.note,
-      id: item.id,
+      id: index,
       isRsvp: item.isRsvp === true,
-      // Add transform properties to the card
       ...generateCardTransform(),
-    }))
-  );
+    }));
+  }, [polaroids]);
 
+  // Store current index
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // UI state
   const [direction, setDirection] = useState<"left" | "right" | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  // We need to use isDragOffBoundary to set the direction based on drag
   const [isDragOffBoundary, setIsDragOffBoundary] = useState<
     "left" | "right" | null
   >(null);
   const [cardDrivenProps, setCardDrivenProps] = useState(initialDrivenProps);
 
-  // Counter for generating unique IDs for recycled cards
-  const idCounter = useRef(originalPolaroids.length);
-  // Track the current position in the original array
-  const currentPositionRef = useRef(0);
-  // Performance optimization - track active card processing
-  const isProcessingCardChange = useRef(false);
+  // Processing flag reference to prevent rapid clicks
+  const isProcessing = useRef(false);
 
-  // Only keep track of the last 3 cards for better performance
+  // Get the current photo
+  const currentPhoto =
+    preparedPolaroids.length > 0 ? preparedPolaroids[currentIndex] : null;
+
+  // Prepare visible cards - calculate this before any early returns
   const visibleCards = useMemo(() => {
-    // Only show at most 3 cards at a time
-    return cards.slice(-3);
-  }, [cards]);
+    if (!currentPhoto) return [];
 
-  useEffect(() => {
-    if (direction === "left" || direction === "right") {
-      if (isProcessingCardChange.current) {
-        // Already processing, let this complete before handling new direction
-        // No need to set it again, the button click already set it
-      }
+    // We always want the current photo visible
+    const result = [currentPhoto];
 
-      // Remove the top card
-      setCards((prevCards) => {
-        const newCards = prevCards.slice(0, -1);
-
-        // Always maintain at least 3 cards (or all cards if less than 3 exist)
-        if (newCards.length < 3 && originalPolaroids.length > 0) {
-          // Update the current position based on direction
-          if (direction === "left") {
-            // Move forward in the order (next card)
-            currentPositionRef.current =
-              (currentPositionRef.current + 1) % originalPolaroids.length;
-          } else {
-            // Move backward in the order (previous card)
-            currentPositionRef.current =
-              (currentPositionRef.current - 1 + originalPolaroids.length) %
-              originalPolaroids.length;
-          }
-
-          const sourceCard = originalPolaroids[currentPositionRef.current];
-
-          // Create a new card with explicit properties
-          const nextCard = {
-            photoData: sourceCard.photoData,
-            note: sourceCard.note,
-            id: idCounter.current,
-            isRsvp: sourceCard.isRsvp === true,
-            // Add transform properties to the new card
-            ...generateCardTransform(),
-          };
-
-          // Increment the ID counter
-          idCounter.current += 1;
-
-          // Add the card to the beginning of the stack
-          return [nextCard, ...newCards];
-        }
-
-        return newCards;
+    if (preparedPolaroids.length > 1) {
+      // Add previous photo(s) if available to create the stack effect
+      const previousIndex =
+        (currentIndex - 1 + preparedPolaroids.length) %
+        preparedPolaroids.length;
+      result.unshift({
+        ...preparedPolaroids[previousIndex],
+        ...generateCardTransform(),
       });
 
-      // Reset processing flag after a short delay to prevent rapid changes
-      setTimeout(() => {
-        isProcessingCardChange.current = false;
-        // Reset direction after processing is complete
-        setDirection(null);
-      }, 300);
+      // Add one more previous photo for deeper stack if available
+      if (preparedPolaroids.length > 2) {
+        const previousIndex2 =
+          (currentIndex - 2 + preparedPolaroids.length) %
+          preparedPolaroids.length;
+        // Only add if it's a different photo
+        if (previousIndex2 !== previousIndex) {
+          result.unshift({
+            ...preparedPolaroids[previousIndex2],
+            ...generateCardTransform(),
+          });
+        }
+      }
     }
-  }, [direction, originalPolaroids]);
 
-  // Card animation variants with improved transitions
+    return result;
+  }, [currentIndex, preparedPolaroids, currentPhoto]);
+
+  // Watch for dragOffBoundary changes to trigger navigation
+  useEffect(() => {
+    // Only proceed if we have a drag boundary and aren't already processing
+    if (isDragOffBoundary && !isProcessing.current) {
+      // When dragging right (positive X direction), show the previous card
+      // When dragging left (negative X direction), show the next card
+      if (isDragOffBoundary === "right") {
+        goToPrevious();
+      } else if (isDragOffBoundary === "left") {
+        goToNext();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDragOffBoundary]);
+
+  // Handle navigation
+  const goToNext = () => {
+    if (isProcessing.current || preparedPolaroids.length <= 1) return;
+
+    isProcessing.current = true;
+    // For next, we swipe left (negative X direction)
+    setDirection("left");
+
+    setTimeout(() => {
+      setCurrentIndex(
+        (prevIndex) => (prevIndex + 1) % preparedPolaroids.length
+      );
+      setDirection(null);
+      setIsDragOffBoundary(null);
+      isProcessing.current = false;
+    }, 300);
+  };
+
+  const goToPrevious = () => {
+    if (isProcessing.current || preparedPolaroids.length <= 1) return;
+
+    isProcessing.current = true;
+    // For previous, we swipe right (positive X direction)
+    setDirection("right");
+
+    setTimeout(() => {
+      setCurrentIndex((prevIndex) =>
+        prevIndex === 0 ? preparedPolaroids.length - 1 : prevIndex - 1
+      );
+      setDirection(null);
+      setIsDragOffBoundary(null);
+      isProcessing.current = false;
+    }, 300);
+  };
+
+  // Exit early if no photos
+  if (preparedPolaroids.length === 0) {
+    return (
+      <div className="text-center text-gray-500">No polaroids to display</div>
+    );
+  }
+
+  // Animation variants
   const cardVariants = {
     current: {
       opacity: 1,
@@ -165,8 +183,6 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
         type: "spring",
         stiffness: 500,
         damping: 30,
-        mass: 1,
-        velocity: 0,
       },
     },
     upcoming: {
@@ -179,7 +195,6 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
         type: "spring",
         stiffness: 400,
         damping: 25,
-        mass: 1.2,
       },
     },
     upcomingSecond: {
@@ -192,17 +207,12 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
         type: "spring",
         stiffness: 300,
         damping: 20,
-        mass: 1.5,
       },
-    },
-    remainings: {
-      opacity: 0,
-      y: 20,
-      scale: 0.9,
-      zIndex: 0,
     },
     exit: {
       opacity: 0,
+      // Left = move to next card (negative X direction)
+      // Right = move to previous card (positive X direction)
       x: direction === "left" ? -300 : 300,
       y: 40,
       rotate: direction === "left" ? -20 : 20,
@@ -211,72 +221,48 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
         stiffness: 400,
         damping: 40,
         velocity: 20,
-        restDelta: 0.5,
       },
     },
   };
 
-  if (!cards.length) {
-    return (
-      <div className="text-center text-gray-500">No polaroids to display</div>
-    );
-  }
-
   return (
     <motion.div
       className={`relative w-full max-w-md mx-auto h-[500px] ${className} flex flex-col justify-center items-center`}
-      style={{
-        perspective: "1200px",
-      }}
+      style={{ perspective: "1200px" }}
     >
       <div className="w-full aspect-[3/4] max-w-[300px] relative">
-        {/* Stack of cards - only render the visible ones */}
         <AnimatePresence mode="popLayout">
           {visibleCards.map((card, i) => {
             const isLast = i === visibleCards.length - 1;
             const isUpcoming = i === visibleCards.length - 2;
-            const isUpcomingSecond = i === visibleCards.length - 3;
 
-            // Explicitly check for true
+            // Explicitly check for isRsvp
             const isRsvp = card.isRsvp === true;
 
             return (
               <motion.div
-                key={`card-${card.id}`}
+                key={`card-${card.id}-${i}`}
                 className="absolute inset-0"
                 variants={cardVariants}
-                initial="remainings"
+                initial="upcomingSecond"
                 animate={
                   isLast
                     ? "current"
                     : isUpcoming
                     ? "upcoming"
-                    : isUpcomingSecond
-                    ? "upcomingSecond"
-                    : "remainings"
+                    : "upcomingSecond"
                 }
                 exit="exit"
                 style={{
-                  // Apply a consistent transform for each card using pre-generated values
                   transform: isLast
                     ? undefined
                     : `rotate(${card.randomRotate}deg) translate(${card.randomTranslateX}px, ${card.randomTranslateY}px)`,
-                  // Apply additional transform based on drag boundary
-                  zIndex:
-                    isLast && isDragOffBoundary
-                      ? 50
-                      : isLast
-                      ? 30
-                      : isUpcoming
-                      ? 20
-                      : isUpcomingSecond
-                      ? 10
-                      : 0,
+                  zIndex: isLast ? 30 : isUpcoming ? 20 : 10,
                 }}
                 layout="position"
               >
                 <PolaroidFrame
-                  id={`cardDriverWrapper-${card.id}`}
+                  id={`card-${card.id}-${i}`}
                   photoData={card.photoData}
                   note={card.note}
                   isLast={isLast}
@@ -296,25 +282,16 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
       {/* Navigation buttons */}
       <motion.div
         className="flex justify-between w-full mt-6 px-4"
-        animate={{
-          opacity: isDragging ? 0.5 : 1,
-        }}
+        animate={{ opacity: isDragging ? 0.5 : 1 }}
         transition={{ duration: 0.2 }}
       >
         <motion.button
           className="bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => {
-            if (!isProcessingCardChange.current) {
-              isProcessingCardChange.current = true;
-              setDirection("right");
-            }
-          }}
+          onClick={goToPrevious}
           aria-label="Previous photo"
-          animate={{
-            scale: cardDrivenProps.buttonScaleLeft,
-          }}
+          animate={{ scale: cardDrivenProps.buttonScaleLeft }}
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
         >
           <svg
@@ -336,16 +313,9 @@ const PolaroidCarousel: React.FC<PolaroidCarouselProps> = ({
           className="bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => {
-            if (!isProcessingCardChange.current) {
-              isProcessingCardChange.current = true;
-              setDirection("left");
-            }
-          }}
+          onClick={goToNext}
           aria-label="Next photo"
-          animate={{
-            scale: cardDrivenProps.buttonScaleRight,
-          }}
+          animate={{ scale: cardDrivenProps.buttonScaleRight }}
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
         >
           <svg

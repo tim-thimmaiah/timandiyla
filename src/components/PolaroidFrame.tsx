@@ -198,7 +198,7 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
         ref={containerRef}
       >
         {/* Left swipe indicator */}
-        <motion.div
+        {/* <motion.div
           className="absolute top-5 left-5 z-10 bg-redz-700 text-white px-3 py-1 rounded-full font-bold transform -rotate-12"
           style={{
             opacity: leftOpacity,
@@ -208,10 +208,10 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
           }}
         >
           NOPE
-        </motion.div>
+        </motion.div> */}
 
         {/* Right swipe indicator */}
-        <motion.div
+        {/* <motion.div
           className="absolute top-5 right-5 z-10 bg-emerald-500 text-white px-3 py-1 rounded-full font-bold transform rotate-12"
           style={{
             opacity: rightOpacity,
@@ -221,7 +221,7 @@ const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
           }}
         >
           YES
-        </motion.div>
+        </motion.div> */}
 
         {/* RSVP Badge - Only show for photos from users who have RSVP'd */}
         {isRsvp && (

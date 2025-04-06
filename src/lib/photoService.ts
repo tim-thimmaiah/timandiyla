@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import { PolaroidItem } from "@/constants/polaroidData";
+import { useRSVPStore } from "./rsvpStore";
 
 // Define the type for a photo from the database
 export type PhotoFromDB = {
@@ -79,15 +80,23 @@ export async function fetchAllPhotos(
     const userPhotos = await fetchApprovedPhotos();
 
     if (userPhotos.length === 0) {
-      return staticPhotos; // If no user photos, just return static ones
+      // If no user photos, keep first static photo at beginning and shuffle the rest
+      const firstPhoto = staticPhotos[0];
+      const restPhotos = staticPhotos.slice(1);
+      return [firstPhoto, ...shuffleArray(restPhotos)];
     }
 
-    // Combine and shuffle all photos for a random integration
-    const allPhotos = [...userPhotos, ...staticPhotos];
-    return shuffleArray(allPhotos);
+    // Keep the first static photo at the beginning and shuffle the rest
+    const firstPhoto = staticPhotos[0];
+    const restPhotos = [...userPhotos, ...staticPhotos.slice(1)];
+    return [firstPhoto, ...shuffleArray(restPhotos)];
   } catch (error) {
     console.error("Error in fetchAllPhotos:", error);
-    return staticPhotos; // Fall back to static photos if there's an error
+    // Fall back to static photos if there's an error
+    // Still keep first photo first and shuffle the rest
+    const firstPhoto = staticPhotos[0];
+    const restPhotos = staticPhotos.slice(1);
+    return [firstPhoto, ...shuffleArray(restPhotos)];
   }
 }
 
@@ -95,7 +104,9 @@ export async function fetchAllPhotos(
  * API route handler to fetch all photos
  * This can be used by client components that can't use server actions directly
  */
-export async function fetchPhotosApi(): Promise<PolaroidItem[]> {
+export async function fetchPhotosApi(
+  staticPhotos?: PolaroidItem[]
+): Promise<PolaroidItem[]> {
   try {
     console.log("fetchPhotosApi: Starting to fetch approved photos");
 
@@ -108,7 +119,9 @@ export async function fetchPhotosApi(): Promise<PolaroidItem[]> {
 
     if (error) {
       console.error("Error fetching approved photos:", error);
-      return [];
+      return staticPhotos && staticPhotos.length > 0
+        ? [staticPhotos[0], ...shuffleArray(staticPhotos.slice(1))]
+        : [];
     }
 
     console.log(
@@ -117,7 +130,9 @@ export async function fetchPhotosApi(): Promise<PolaroidItem[]> {
 
     if (!photos || photos.length === 0) {
       console.log("fetchPhotosApi: No approved photos found in database");
-      return [];
+      return staticPhotos && staticPhotos.length > 0
+        ? [staticPhotos[0], ...shuffleArray(staticPhotos.slice(1))]
+        : [];
     }
 
     // Log the first photo from the database for debugging
@@ -151,13 +166,39 @@ export async function fetchPhotosApi(): Promise<PolaroidItem[]> {
       };
     });
 
-    console.log(
-      `fetchPhotosApi: Returning ${polaroidItems.length} polaroid items`
-    );
-    return polaroidItems;
+    // If we have static photos, put the first one at the beginning
+    if (staticPhotos && staticPhotos.length > 0) {
+      const firstStaticPhoto = {
+        ...staticPhotos[0],
+        isRsvp: false,
+      };
+
+      // Combine the rest of the static photos with user photos and shuffle
+      const restPhotos = [
+        ...polaroidItems,
+        ...staticPhotos.slice(1).map((photo) => ({
+          ...photo,
+          isRsvp: false,
+        })),
+      ];
+
+      console.log(
+        `fetchPhotosApi: Returning first static photo + ${restPhotos.length} shuffled items`
+      );
+
+      return [firstStaticPhoto, ...shuffleArray(restPhotos)];
+    } else {
+      // If no static photos were provided, just return user photos
+      console.log(
+        `fetchPhotosApi: Returning ${polaroidItems.length} polaroid items (no static photos)`
+      );
+      return polaroidItems;
+    }
   } catch (error) {
     console.error("Error in fetchPhotosApi:", error);
-    return [];
+    return staticPhotos && staticPhotos.length > 0
+      ? [staticPhotos[0], ...shuffleArray(staticPhotos.slice(1))]
+      : [];
   }
 }
 
@@ -170,6 +211,37 @@ export async function fetchCombinedPhotos(
 ): Promise<PolaroidItem[]> {
   try {
     console.log("fetchCombinedPhotos: Starting...");
+
+    // Log the first static photo
+    console.log("fetchCombinedPhotos: First static photo:", {
+      photoData: staticPhotos[0]?.photoData,
+      note: staticPhotos[0]?.note,
+    });
+
+    // Log the total number of static photos
+    console.log(
+      `fetchCombinedPhotos: Total static photos: ${staticPhotos.length}`
+    );
+
+    // Check if there's a user RSVP with a photo
+    // We can't directly access the store on the server, but we can check client-side
+    let userPhotoUrl = null;
+    let userName = null;
+
+    // This will only work on the client side, not during SSR
+    if (typeof window !== "undefined") {
+      try {
+        const rsvpStore = useRSVPStore.getState();
+        userPhotoUrl = rsvpStore.photoUrl;
+        userName = rsvpStore.name;
+
+        if (userPhotoUrl) {
+          console.log(`Found user photo for ${userName}:`, userPhotoUrl);
+        }
+      } catch {
+        console.log("Unable to access RSVP store on server");
+      }
+    }
 
     // Fetch approved photos from the database with rsvp_id information
     const { data: photos, error } = await supabase
@@ -187,17 +259,6 @@ export async function fetchCombinedPhotos(
       `fetchCombinedPhotos: Found ${photos?.length || 0} user-submitted photos`
     );
 
-    if (!photos || photos.length === 0) {
-      console.log(
-        "fetchCombinedPhotos: No user photos, returning static photos only"
-      );
-      return staticPhotos.map((photo, index) => ({
-        ...photo,
-        id: index,
-        isRsvp: false,
-      }));
-    }
-
     // Process user-submitted photos
     const userPhotos = photos.map((photo: PhotoFromDB) => {
       // Get the public URL for the photo
@@ -212,21 +273,98 @@ export async function fetchCombinedPhotos(
       };
     });
 
+    console.log(
+      `fetchCombinedPhotos: Processed ${userPhotos.length} user photos`
+    );
+
     // Process static photos to ensure consistent format
     const processedStaticPhotos = staticPhotos.map((photo) => ({
       ...photo,
       isRsvp: false,
     }));
 
-    // Combine and shuffle all photos
-    const combinedPhotos = [...userPhotos, ...processedStaticPhotos];
-    return shuffleArray(combinedPhotos);
-  } catch (error) {
-    console.error("Error in fetchCombinedPhotos:", error);
-    return staticPhotos.map((photo, index) => ({
-      ...photo,
-      id: index,
-      isRsvp: false,
-    }));
+    // Create the result array
+    let result: PolaroidItem[] = [];
+
+    // If we have a user's own photo from the RSVP store, show it first
+    if (userPhotoUrl) {
+      result.push({
+        photoData: userPhotoUrl,
+        note: `${userName || "Your"} photo`,
+        isRsvp: true,
+      });
+    }
+
+    // Add the first static photo
+    const firstStaticPhoto = processedStaticPhotos[0];
+    result.push(firstStaticPhoto);
+
+    // Then add the rest of the photos shuffled
+    const restPhotos = [...userPhotos, ...processedStaticPhotos.slice(1)];
+    const shuffledRest = shuffleArray(restPhotos);
+    result = [...result, ...shuffledRest];
+
+    console.log("fetchCombinedPhotos: Result's first photo:", {
+      photoData: result[0]?.photoData,
+      note: result[0]?.note,
+    });
+    console.log(`fetchCombinedPhotos: Returning ${result.length} total photos`);
+
+    return result;
+  } catch (fetchError) {
+    console.error("Error in fetchCombinedPhotos:", fetchError);
+
+    // Handle error case, still try to display user photo if available
+    let result = staticPhotos;
+
+    // Check for user photo on client side
+    if (typeof window !== "undefined") {
+      try {
+        const rsvpStore = useRSVPStore.getState();
+        const userPhotoUrl = rsvpStore.photoUrl;
+        const userName = rsvpStore.name;
+
+        if (userPhotoUrl) {
+          // Insert user's photo at the beginning
+          result = [
+            {
+              photoData: userPhotoUrl,
+              note: `${userName || "Your"} photo`,
+              isRsvp: true,
+            },
+            staticPhotos[0], // First static photo
+            ...shuffleArray(staticPhotos.slice(1)).map((photo) => ({
+              ...photo,
+              isRsvp: false,
+            })),
+          ];
+        } else {
+          // Fallback to regular pattern with first static photo first
+          const firstPhoto = staticPhotos[0];
+          const restPhotos = staticPhotos.slice(1);
+          const shuffledRest = shuffleArray(restPhotos);
+
+          result = [
+            { ...firstPhoto, isRsvp: false },
+            ...shuffledRest.map((photo) => ({
+              ...photo,
+              isRsvp: false,
+            })),
+          ];
+        }
+      } catch {
+        console.log("Unable to access RSVP store on server");
+      }
+    }
+
+    console.log("fetchCombinedPhotos (error path): Result's first photo:", {
+      photoData: result[0]?.photoData,
+      note: result[0]?.note,
+    });
+    console.log(
+      `fetchCombinedPhotos (error path): Returning ${result.length} total photos`
+    );
+
+    return result;
   }
 }

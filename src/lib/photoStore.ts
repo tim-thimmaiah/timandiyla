@@ -70,9 +70,9 @@ export const usePhotoMemoryStore = create<
   savePhotoMemory: async () => {
     const { photoData, note } = get();
     const rsvpStore = useRSVPStore.getState();
-    const { name, email } = rsvpStore;
+    const { name, email, id: rsvpId } = rsvpStore;
 
-    console.log("RSVP data:", { name, email });
+    console.log("RSVP data:", { name, email, rsvpId });
 
     // Validate that we have a photo
     if (!photoData) {
@@ -112,10 +112,11 @@ export const usePhotoMemoryStore = create<
 
       const photoUrl = publicUrlData.publicUrl;
 
-      // Find the RSVP record for this user
-      let rsvpId = null;
+      // Find or create the RSVP record for this user
+      let finalRsvpId = rsvpId;
 
-      if (email) {
+      if (!finalRsvpId && email) {
+        // If no RSVP ID is available in the store, try to find it by email
         const { data: rsvpData, error: rsvpError } = await supabase
           .from("rsvps")
           .select("id")
@@ -128,8 +129,8 @@ export const usePhotoMemoryStore = create<
         } else {
           console.log("RSVP lookup result:", rsvpData);
           if (rsvpData && rsvpData.length > 0) {
-            rsvpId = rsvpData[0].id;
-            console.log("Found RSVP ID:", rsvpId);
+            finalRsvpId = rsvpData[0].id;
+            console.log("Found RSVP ID:", finalRsvpId);
           } else {
             console.log("No RSVP record found for email:", email);
 
@@ -150,19 +151,21 @@ export const usePhotoMemoryStore = create<
               if (createError) {
                 console.error("Error creating RSVP record:", createError);
               } else if (newRsvp && newRsvp.length > 0) {
-                rsvpId = newRsvp[0].id;
-                console.log("Created new RSVP ID:", rsvpId);
+                finalRsvpId = newRsvp[0].id;
+                console.log("Created new RSVP ID:", finalRsvpId);
               }
             }
           }
         }
       } else {
-        console.log("No email available for RSVP lookup");
+        console.log("Using RSVP ID from store:", finalRsvpId);
       }
+
+      console.log("Final RSVP ID:", finalRsvpId);
 
       // Insert a record in the photos table
       const { error: photoError } = await supabase.from("photos").insert({
-        rsvp_id: rsvpId,
+        rsvp_id: finalRsvpId,
         storage_path: filePath,
         note,
         approved: true, // Auto-approve photos so they appear on the home page
@@ -172,7 +175,10 @@ export const usePhotoMemoryStore = create<
         throw new Error(photoError.message);
       }
 
-      console.log("Photo saved successfully with RSVP ID:", rsvpId);
+      console.log("Photo saved successfully with RSVP ID:", finalRsvpId);
+
+      // Save the photo URL to the RSVP store
+      rsvpStore.setPhotoUrl(photoUrl);
 
       // Update state with success
       set({

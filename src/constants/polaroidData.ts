@@ -6,6 +6,14 @@ export interface PolaroidItem {
 
 export const polaroidData: PolaroidItem[] = [
   {
+    photoData: "/images/IMG_5915.jpeg",
+    note: "Pyrennes, Spain",
+  },
+  {
+    photoData: "/images/60733009-4E5F-4671-8167-85453EFB68FAIMG_2296.jpg",
+    note: "Oakland, California",
+  },
+  {
     photoData: "/images/214DFA3A-EAD5-43B2-A48E-168110E67F53IMG_8029.jpg",
     note: "Oceanside, California",
   },
@@ -72,10 +80,6 @@ export const polaroidData: PolaroidItem[] = [
   {
     photoData: "/images/436E1DBD-29CF-4671-820F-B54E455A8BD1IMG_4796.jpg",
     note: "Ensenada, México",
-  },
-  {
-    photoData: "/images/60733009-4E5F-4671-8167-85453EFB68FAIMG_2296.jpg",
-    note: "Oakland, California",
   },
   {
     photoData:

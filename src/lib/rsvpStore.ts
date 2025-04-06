@@ -10,6 +10,8 @@ export type RSVPFormState = {
   isSubmitting: boolean;
   isSubmitted: boolean;
   error: string | null;
+  id: number | null;
+  photoUrl: string | null;
 };
 
 // Define the type for our RSVP form actions
@@ -20,6 +22,7 @@ type RSVPFormActions = {
   updateGuest: (index: number, name: string) => void;
   removeGuest: (index: number) => void;
   setMessage: (message: string) => void;
+  setPhotoUrl: (url: string) => void;
   resetForm: () => void;
   submitForm: () => Promise<void>;
 };
@@ -33,6 +36,8 @@ const initialState: RSVPFormState = {
   isSubmitting: false,
   isSubmitted: false,
   error: null,
+  id: null,
+  photoUrl: null,
 };
 
 // Create the store
@@ -65,6 +70,9 @@ export const useRSVPStore = create<RSVPFormState & RSVPFormActions>(
 
     setMessage: (message) => set({ message }),
 
+    // Set the photo URL
+    setPhotoUrl: (photoUrl) => set({ photoUrl }),
+
     // Reset the form to its initial state
     resetForm: () => set(initialState),
 
@@ -85,19 +93,25 @@ export const useRSVPStore = create<RSVPFormState & RSVPFormActions>(
         const validGuests = guests.filter((guest) => guest.trim() !== "");
 
         // Insert the RSVP data into Supabase
-        const { error: supabaseError } = await supabase.from("rsvps").insert({
-          name,
-          email,
-          guests: validGuests,
-          message,
-          created_at: new Date().toISOString(),
-        });
+        const { data, error: supabaseError } = await supabase
+          .from("rsvps")
+          .insert({
+            name,
+            email,
+            guests: validGuests,
+            message,
+            created_at: new Date().toISOString(),
+          })
+          .select();
 
         if (supabaseError) {
           throw new Error(supabaseError.message);
         }
 
-        set({ isSubmitted: true, isSubmitting: false });
+        // Store the RSVP ID if available
+        const id = data && data.length > 0 ? data[0].id : null;
+
+        set({ isSubmitted: true, isSubmitting: false, id });
       } catch (error) {
         console.error("RSVP submission error:", error);
         set({
